@@ -69,5 +69,5 @@ apidict = {
     }
 }
 apidictdata = json.dumps(apidict, indent = 4)
-with open("Finance_Stock_Database/data/apidictdata.json", "w") as f:
+with open("data/apidictdata.json", "w") as f:
     f.write(apidictdata)

@@ -21,7 +21,7 @@ class LocatorApp:
         self.enddate = ""
         self.output_dir = ""
         self.feature = ""
-        self.APIkey = ""
+        self.api = ""
         self.create_widgets()
 
     
@@ -32,9 +32,9 @@ class LocatorApp:
             self.outputloc.insert(0, self.output_dir)
     
     def submit(self):
+        self.api = self.api.get()
         self.feature =self.featuretext.get("1.0", tk.END).strip()
-        self.APIkey = self.APIkeytext.get("1.0", tk.END).strip()
-        if not self.startdate or not self.enddate or not self.APIkeytext or not self.featuretext or not self.outputloc:
+        if not self.startdate or not self.enddate  or not self.featuretext or not self.outputloc:
             messagebox.showwarning("Input Error: Complete all fields")
         else:
             try:
@@ -91,13 +91,16 @@ class LocatorApp:
         outputbutton = tk.Button(self.root, text = "Browse", command = self.select_output_dir)
         outputbutton.grid(row=8, column=1, sticky="w",pady=4)
         
-        APIkeylab = tk.Label(self.root, text= "API Key: ")
-        APIkeylab.grid(row=9, column=0, sticky="w",pady=4)
-        self.APIkeytext = tk.Text(self.root, width = 50, height = 1)
-        self.APIkeytext.grid(row=9, column=1, sticky="w",pady=4)
+        self.api = tk.StringVar(value = "Image")
+        APIoptlab = tk.Label(self.root, text= "API Option: ")
+        APIoptlab.grid(row=9, column=0, sticky="w",pady=4)
+        Tiingo = tk.Radiobutton(self.root, text = "Tiingo", variable = self.api, value = 'Tiingo')
+        Tiingo.grid(row = 10, column = 0, sticky = 'w')
+        Alpha = tk.Radiobutton(self.root, text = "Alpha Vantage", variable = self.api, value = "Alpha")
+        Alpha.grid(row = 10, column = 1, sticky = 'w')
 
         submit_button = tk.Button(self.root, text = "Submit", command = self.submit)
-        submit_button.grid(row=10, column=1, sticky="w",pady=4)
+        submit_button.grid(row=11, column=1, sticky="w",pady=4)
 
 
 #  LAUNCH GUI
@@ -106,14 +109,20 @@ root = tk.Tk()
 app = LocatorApp(root)
 root.mainloop()
 
+# Open the JSON dictionary file containing the collected API keys
+with open("data/apidictdata.json") as filejson:
+    data = json.load(filejson)
+
+apikey = data[app.api]['API-KEY']
 headersdict = {
     'Content-Type': 'application/json'
 }
-url = f"https://api.tiingo.com/tiingo/daily/{app.feature}/prices?startDate={app.startdate}&endDate={app.enddate}&resampleFreq=daily&token={app.APIkey}"
+url = f"https://api.tiingo.com/tiingo/daily/{app.feature}/prices?startDate={app.startdate}&endDate={app.enddate}&resampleFreq=daily&token={apikey}"
 duckdb_path = f"{app.output_dir}/stocks.db"
 con = duckdb.connect(database=duckdb_path, read_only=False) 
 
 try:
+    print(url)
     requestResponse = requests.get(url, headers=headersdict)
     jsonoutcome =(requestResponse.content)
     lazyframe =  pl.read_json(jsonoutcome)

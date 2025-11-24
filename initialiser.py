@@ -61,7 +61,7 @@ root.mainloop()
 apidict = {
     'Tiingo':{
         'API-KEY': app.TiingoAPIKey,
-        'URL': 'https://api.tiingo.com/tiingo'
+        'URL': 'https://api.tiingo.com/tiingo/daily/'
     },
     'AlphaVantage':{
         'API-KEY': app.AlphavantageAPIKey,

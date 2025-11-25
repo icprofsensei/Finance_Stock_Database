@@ -61,13 +61,17 @@ root.mainloop()
 apidict = {
     'Tiingo':{
         'API-KEY': app.TiingoAPIKey,
-        'URL': 'https://api.tiingo.com/tiingo/daily/'
+        'URL': 'https://api.tiingo.com/tiingo/daily/',
+        "CALLS-DAY": {},
+        "CALLS-HOUR":{}
     },
     'AlphaVantage':{
         'API-KEY': app.AlphavantageAPIKey,
-        'URL': 'https://www.alphavantage.co/query?function='
+        'URL': 'https://www.alphavantage.co/query?function=',
+        "CALLS-DAY": {},
+        "CALLS-HOUR":{}
     }
 }
 apidictdata = json.dumps(apidict, indent = 4)
-with open("data/apidictdata.json", "w") as f:
+with open("data/apidictdata.json", "a+") as f:
     f.write(apidictdata)

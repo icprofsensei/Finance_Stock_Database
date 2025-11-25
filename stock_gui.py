@@ -13,8 +13,10 @@ import duckdb
 # TKINTER GUI
 
 class LocatorApp:
-    def __init__(self, root):
+    def __init__(self, root, data, datefeatures):
         self.root = root
+        self.data = data
+        self.datefeatures = datefeatures
         self.root.title('File Selector')
         self.root.geometry("550x750")
         self.startdate = ""
@@ -56,7 +58,7 @@ class LocatorApp:
                     self.enddatetext.insert(0, self.enddate)
 
     def create_widgets(self):
-
+        
         featurelab = tk.Label(self.root, text= "Ticker: ")
         featurelab.grid(row=0, column=0, sticky="w",pady=5)
         self.featuretext = tk.Text(self.root, width = 50, height = 1)
@@ -94,6 +96,30 @@ class LocatorApp:
         self.api = tk.StringVar(value = "Image")
         APIoptlab = tk.Label(self.root, text= "API Option: ")
         APIoptlab.grid(row=9, column=0, sticky="w",pady=4)
+        if len(data['Tiingo']['CALLS-HOUR'].keys()) >=1:
+            if datefeatures['HOUR'] not in data['Tiingo']['CALLS-HOUR'].keys():
+                tiingostatuslab = tk.Label(self.root, text= f"""Tiingo Usage:
+                                        Calls this day: {data['Tiingo']['CALLS-DAY'][datefeatures['DATE']]} /1000
+                                        """)
+                tiingostatuslab.grid(row=9, column=1, sticky="w",pady=4)
+            else:
+                tiingostatuslab = tk.Label(self.root, text= f"""Tiingo Usage:
+                                    Calls this hour: {data['Tiingo']['CALLS-HOUR'][datefeatures['HOUR']]} /50,
+                                        Calls this day: {data['Tiingo']['CALLS-DAY'][datefeatures['DATE']]} /1000
+                                        """)
+                tiingostatuslab.grid(row=9, column=1, sticky="w",pady=4)
+        if len(data['AlphaVantage']['CALLS-HOUR'].keys()) >=1:
+            if datefeatures['HOUR'] not in data['AlphaVantage']['CALLS-HOUR'].keys():
+                alphastatuslab = tk.Label(self.root, text= f"""AlphaVantage Usage:
+                                        Calls this day: {data['AlphaVantage']['CALLS-DAY'][datefeatures['DATE']]} /1000
+                                        """)
+                alphastatuslab.grid(row=9, column=1, sticky="w",pady=4)
+            else:
+                alphastatuslab = tk.Label(self.root, text= f"""AlphaVantage Usage:
+                                    Calls this hour: {data['AlphaVantage']['CALLS-HOUR'][datefeatures['HOUR']]} /50,
+                                        Calls this day: {data['AlphaVantage']['CALLS-DAY'][datefeatures['DATE']]} /1000
+                                        """)
+                alphastatuslab.grid(row=9, column=1, sticky="w",pady=4)
         Tiingo = tk.Radiobutton(self.root, text = "Tiingo", variable = self.api, value = 'Tiingo')
         Tiingo.grid(row = 10, column = 0, sticky = 'w')
         Alpha = tk.Radiobutton(self.root, text = "Alpha Vantage", variable = self.api, value = "Alpha")
@@ -102,31 +128,53 @@ class LocatorApp:
         submit_button = tk.Button(self.root, text = "Submit", command = self.submit)
         submit_button.grid(row=11, column=1, sticky="w",pady=4)
 
-
-#  LAUNCH GUI
-
-root = tk.Tk()
-app = LocatorApp(root)
-root.mainloop()
-
+# DATE FEATURES
+nowobj = datetime.datetime.now()
+date = nowobj.strftime("%x")
+hour = nowobj.strftime("%H")
+datefeatures = {'DATE':date, 'HOUR': hour}
 # Open the JSON dictionary file containing the collected API keys
 with open("data/apidictdata.json") as filejson:
     data = json.load(filejson)
+
+#LAUNCH GUI
+root = tk.Tk()
+app = LocatorApp(root, data, datefeatures)
+root.mainloop()
 
 apikey = data[app.api]['API-KEY']
 headersdict = {
     'Content-Type': 'application/json'
 }
-url = f"https://api.tiingo.com/tiingo/daily/{app.feature}/prices?startDate={app.startdate}&endDate={app.enddate}&resampleFreq=daily&token={apikey}"
+if app.api == 'Tiingo':
+    url = f"{data[app.api]['URL']}/{app.feature}/prices?startDate={app.startdate}&endDate={app.enddate}&resampleFreq=daily&token={apikey}"
 duckdb_path = f"{app.output_dir}/stocks.db"
 con = duckdb.connect(database=duckdb_path, read_only=False) 
 
 try:
+    
+
     print(url)
     requestResponse = requests.get(url, headers=headersdict)
     jsonoutcome =(requestResponse.content)
-    lazyframe =  pl.read_json(jsonoutcome)
-    print(lazyframe.columns)
+    try:
+        lazyframe =  pl.read_json(jsonoutcome)
+        print("Reading data to dataframe")
+        if len(lazyframe.columns) > 1:
+            if date not in data[app.api]['CALLS-DAY'].keys():
+                    data[app.api]['CALLS-DAY'][date] = 1
+            else:
+                    data[app.api]['CALLS-DAY'][date] += 1
+            if hour not in data[app.api]['CALLS-HOUR'].keys():
+                    data[app.api]['CALLS-HOUR'][hour] = 1
+            else:
+                    data[app.api]['CALLS-HOUR'][hour] += 1
+            print("Adjusted limits dictionary")
+            apidictdata = json.dumps(data, indent = 4)
+            with open("data/apidictdata.json", "w") as f:
+                f.write(apidictdata)
+    except Exception as e:
+         print(e)
     lazyframe = lazyframe.with_columns([pl.col("date").str.slice(0,10).cast(pl.Date), pl.col("close").cast(pl.Float64), pl.col("high").cast(pl.Float64), pl.col("low").cast(pl.Float64)])
     con.execute(f""" CREATE TABLE IF NOT EXISTS
                 {app.feature}
@@ -134,6 +182,7 @@ try:
                 SELECT *
                 FROM lazyframe;""")
     con.close()
+    print("Added dataframe to database")
 
 except Exception as e:
      print(e)

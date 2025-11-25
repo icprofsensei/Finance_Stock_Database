@@ -137,6 +137,15 @@ datefeatures = {'DATE':date, 'HOUR': hour}
 with open("data/apidictdata.json") as filejson:
     data = json.load(filejson)
 
+
+if (len(data['AlphaVantage']['CALLS-DAY'].keys()) >= 1 and date not in data['AlphaVantage']['CALLS-DAY'].keys()) or (len(data['Tiingo']['CALLS-DAY'].keys()) >= 1 and date not in data['Tiingo']['CALLS-DAY'].keys()):
+     data['AlphaVantage']['CALLS-DAY'] = {}
+     data['AlphaVantage']['CALLS-HOUR'] = {}
+     data['Tiingo']['CALLS-DAY'] = {}
+     data['Tiingo']['CALLS-HOUR'] = {}
+     with open("data/apidictdata.json", "w") as f:
+                f.write(data)
+     
 #LAUNCH GUI
 root = tk.Tk()
 app = LocatorApp(root, data, datefeatures)

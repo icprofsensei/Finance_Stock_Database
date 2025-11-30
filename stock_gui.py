@@ -6,9 +6,50 @@ import polars as pl
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from tkcalendar import Calendar
+import tksheet
 from tqdm import tqdm
 import datetime
 import duckdb
+
+
+tickers = pl.read_csv("tickers.csv").to_dicts()
+class BrowserApp:
+    def __init__(self, stock_browser_root, tickers):
+        self.stock_browser_root = stock_browser_root
+        self.tickers = tickers
+        self.stock_browser_root.title('Stock Browser')
+        self.stock_browser_root.geometry("550x350")
+        self.curr_row = ""
+        self.curr_col = ""
+        self.finalticker = ""
+        self.create_widgets()
+    
+    def submit(self):
+                rowdata = self.tickers[self.curr_row]
+                try:
+                    self.finalticker = rowdata['Ticker']
+                    self.stock_browser_root.destroy()
+                    
+                except Exception as e:
+                    messagebox.showerror(f"Error {e} occurred")
+    def on_cell_select(self, event):
+        row = event['selected'][0]
+        col = event['selected'][1]
+        self.curr_row = row
+        self.curr_col = col
+    def create_widgets(self):
+        cols = list(self.tickers[0].keys())
+        rows = [list(row.values()) for row in self.tickers]
+        self.sheet = tksheet.Sheet(self.stock_browser_root)
+        self.sheet.pack(expand = True, fill = 'both')
+        self.sheet.headers(cols)
+        self.sheet.set_sheet_data(rows)
+        self.sheet.enable_bindings("single_select", "row_select", "arrowkeys", "right_click_popup_menu")
+        self.sheet.extra_bindings("cell_select", self.on_cell_select)
+        submitrow = tk.Button(self.stock_browser_root, text = "Submit", command = self.submit)
+        submitrow.pack(pady = 10)    
+
+
 
 # TKINTER GUI
 
@@ -18,7 +59,7 @@ class LocatorApp:
         self.data = data
         self.datefeatures = datefeatures
         self.root.title('File Selector')
-        self.root.geometry("550x750")
+        self.root.geometry("600x750")
         self.startdate = ""
         self.enddate = ""
         self.output_dir = ""
@@ -26,7 +67,14 @@ class LocatorApp:
         self.api = ""
         self.create_widgets()
 
-    
+    def launch_browser(self):
+            stock_browser_root = tk.Toplevel(self.root)
+            tickerapp = BrowserApp(stock_browser_root, tickers)
+            stock_browser_root.wait_window(stock_browser_root)
+            self.featuretext.delete(0, tk.END)
+            self.featuretext.insert(0, tickerapp.finalticker)
+
+
     def select_output_dir(self):
         self.output_dir = filedialog.askdirectory(title = "Select the folder where the database will be created: ")
         if self.output_dir:
@@ -35,7 +83,10 @@ class LocatorApp:
     
     def submit(self):
         self.api = self.api.get()
-        self.feature =self.featuretext.get("1.0", tk.END).strip()
+        if type(self.featuretext) == str:
+            self.feature =self.featuretext.get("1.0", tk.END).strip()
+        else:
+            self.feature =self.featuretext.get().strip()
         if not self.startdate or not self.enddate  or not self.featuretext or not self.outputloc:
             messagebox.showwarning("Input Error: Complete all fields")
         else:
@@ -61,8 +112,10 @@ class LocatorApp:
         
         featurelab = tk.Label(self.root, text= "Ticker: ")
         featurelab.grid(row=0, column=0, sticky="w",pady=5)
-        self.featuretext = tk.Text(self.root, width = 50, height = 1)
+        self.featuretext = tk.Entry(self.root, width = 50)
         self.featuretext.grid(row=0, column=1, sticky="w",pady=5)
+        featurebutton = tk.Button(self.root, text = "Browse available green tickers:", command = self.launch_browser)
+        featurebutton.grid(row=0, column=2, sticky="w",pady=5)
 
         startlab = tk.Label(self.root, text= "Start Date")
         startlab.grid(row=1, column=0, sticky="w",pady=5)
@@ -144,7 +197,7 @@ if (len(data['AlphaVantage']['CALLS-DAY'].keys()) >= 1 and date not in data['Alp
      data['Tiingo']['CALLS-DAY'] = {}
      data['Tiingo']['CALLS-HOUR'] = {}
      with open("data/apidictdata.json", "w") as f:
-                f.write(data)
+                f.write(json.dumps(data, indent = 4))
      
 #LAUNCH GUI
 root = tk.Tk()
@@ -186,7 +239,7 @@ try:
          print(e)
     lazyframe = lazyframe.with_columns([pl.col("date").str.slice(0,10).cast(pl.Date), pl.col("close").cast(pl.Float64), pl.col("high").cast(pl.Float64), pl.col("low").cast(pl.Float64)])
     con.execute(f""" CREATE TABLE IF NOT EXISTS
-                {app.feature}
+                TICKER_{app.feature}
                 AS 
                 SELECT *
                 FROM lazyframe;""")

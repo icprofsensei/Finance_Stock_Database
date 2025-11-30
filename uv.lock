@@ -122,6 +122,7 @@ dependencies = [
     { name = "pyarrow" },
     { name = "requests" },
     { name = "tkcalendar" },
+    { name = "tksheet" },
     { name = "tqdm" },
 ]
 
@@ -132,6 +133,7 @@ requires-dist = [
     { name = "pyarrow", specifier = ">=22.0.0" },
     { name = "requests", specifier = ">=2.32.5" },
     { name = "tkcalendar", specifier = ">=1.6.1" },
+    { name = "tksheet", specifier = ">=7.5.19" },
     { name = "tqdm", specifier = ">=4.67.1" },
 ]
 
@@ -238,6 +240,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/65/3d/3406cf7963661ed890082bff17ed4c5e26b5a564306639303d4fbb2a047f/tkcalendar-1.6.1.tar.gz", hash = "sha256:5edf958c0a59429e90309e9b805b2e229192bbcab952460247204d7030eea5cf", size = 32916, upload-time = "2019-12-28T11:20:54.019Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e9/d4/9528ea6ecb5d4394f425df651957da6f6a715b41c5b12d43d41888c14394/tkcalendar-1.6.1-py3-none-any.whl", hash = "sha256:9d3a80816a7b32d64fab696fa3d2a007fb23c87953267d5e343a38ff4cd7c15c", size = 40912, upload-time = "2019-12-28T11:20:48.564Z" },
+]
+
+[[package]]
+name = "tksheet"
+version = "7.5.19"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a9/8e/18d5ef90b778318e0be20ea6f5165dda08002085b94cdbf98542cc4c82eb/tksheet-7.5.19.tar.gz", hash = "sha256:df5294b08910f51a1d6055c5ce257a37824262ffec7527ff1562a5479a1ce0dd", size = 198998, upload-time = "2025-11-19T18:41:16.883Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/51/50/8ac1d4a9a8e12b1ad8a9b92a810cc12d2e59ef4411df2d82bd6c7dee2f7d/tksheet-7.5.19-py3-none-any.whl", hash = "sha256:a1a92b65b01f75b0e079a53e660da251ec47c8369e655ba54ae0bee7173a2e99", size = 202582, upload-time = "2025-11-19T18:41:15.024Z" },
 ]
 
 [[package]]

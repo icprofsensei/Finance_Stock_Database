@@ -68,8 +68,7 @@ apidict = {
     'AlphaVantage':{
         'API-KEY': app.AlphavantageAPIKey,
         'URL': 'https://www.alphavantage.co/query?function=',
-        "CALLS-DAY": {},
-        "CALLS-HOUR":{}
+        "CALLS-DAY": {}
     }
 }
 apidictdata = json.dumps(apidict, indent = 4)

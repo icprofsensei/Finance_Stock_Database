@@ -16,16 +16,19 @@ Pre-requisites: Python or Conda is installed on your machine. The following tuto
 
             git clone https://github.com/icprofsensei/Finance_Stock_Database.git
 
-2) Open the command prompt and navigate to your repository: 
+2) Open the command prompt and navigate to your repository:
+   
             cd [YOUR PROJECT DIRECTORY]
 
-3) Create a virtual environment for your repository:
+4) Create a virtual environment for your repository:
+   
             python -m venv env
 
-4) Activate your virtual environment:
+6) Activate your virtual environment:
+   
             env\Scripts\activate.bat
 
-5) Depending on your package manager:
+8) Depending on your package manager:
 
       a) Install all the required packages using venv or conda:
             (env) pip install -r requirements.txt
@@ -36,7 +39,8 @@ Pre-requisites: Python or Conda is installed on your machine. The following tuto
             
             uv sync
 
-6)
+9)
+
 
 
 

@@ -31,10 +31,12 @@ Pre-requisites: Python or Conda is installed on your machine. The following tuto
 
   b) Install the full environment using poetry or uv:
   
-**poetry install 
-**uv sync
+**poetry install** 
+
+**uv sync**
 
 6)
+
 
 
 

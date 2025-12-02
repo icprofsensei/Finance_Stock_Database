@@ -26,16 +26,18 @@ Pre-requisites: Python or Conda is installed on your machine. The following tuto
 **env\Scripts\activate.bat**
 
 5) Depending on your package manager:
-   a) Install all the required packages using venv or conda:
-**(env) pip install -r requirements.txt**
 
-  b) Install the full environment using poetry or uv:
+      a) Install all the required packages using venv or conda:
+            **(env) pip install -r requirements.txt**
+
+     b) Install the full environment using poetry or uv:
   
-**poetry install** 
-
-**uv sync**
+            **poetry install** 
+            
+            **uv sync**
 
 6)
+
 
 
 

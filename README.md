@@ -8,7 +8,7 @@
 
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------
 
-### * This is an all-in-one python GUI and pipeline to enable green stock analysis, whilst managing free API rate limits automatically.* 
+ *  ###This is an all-in-one python GUI and pipeline to enable green stock analysis, whilst managing free API rate limits automatically.* 
 
 Pre-requisites: Python or Conda is installed on your machine. The following tutorial is for windows devices but can be adapted for MacOS. 
 
@@ -36,6 +36,7 @@ Pre-requisites: Python or Conda is installed on your machine. The following tuto
 **uv sync**
 
 6)
+
 
 
 

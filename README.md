@@ -4,10 +4,12 @@
 
 :-------------------------:|:-------------------------:
 
-<img width="240" height="185" alt="image" src="https://github.com/user-attachments/assets/cc419505-20ed-4f7a-9108-7dd9d53a3e2d" />|<img width="1200" height="620" alt="image" src="https://github.com/user-attachments/assets/a10d1f78-27e9-498b-8cc6-e4e27e1a0c56" />
+<img width="240" height="185" alt="image" src="https://github.com/user-attachments/assets/cc419505-20ed-4f7a-9108-7dd9d53a3e2d" />
+<img width="1200" height="620" alt="image" src="https://github.com/user-attachments/assets/a10d1f78-27e9-498b-8cc6-e4e27e1a0c56" />
 
 
 This is an all-in-one python GUI and pipeline to enable 
+
 
 
 

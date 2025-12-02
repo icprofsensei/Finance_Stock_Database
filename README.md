@@ -14,7 +14,7 @@ Pre-requisites: Python or Conda is installed on your machine. The following tuto
 
 1) Download this repository as a zip folder and then extract all to your chosen directory. Alternatively, if you have git installed, you can clone via:
 
-**git clone https://github.com/icprofsensei/Finance_Stock_Database.git
+**git clone https://github.com/icprofsensei/Finance_Stock_Database.git**
 
 2) Open the command prompt and navigate to your repository: 
 **cd [YOUR PROJECT DIRECTORY]**
@@ -36,6 +36,7 @@ Pre-requisites: Python or Conda is installed on your machine. The following tuto
 **uv sync**
 
 6)
+
 
 
 

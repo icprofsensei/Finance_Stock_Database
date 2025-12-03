@@ -43,19 +43,21 @@ Pre-requisites: Python or Conda is installed on your machine. The following tuto
             uv sync
 
 9) Visit the following sites and create a free account:
+    
      a) *https://www.tiingo.com/documentation/general/connecting*
      Save the API token once created.
 
      b) *https://www.alphavantage.co/support/#api-key*
      Save the API token once created.
 
-10) To make these keys accessible in your project, run the file initialiser.py, this will allow you to enter your saved API tokens/keys for each site. The script will automatically save the tokens into a JSON file in your data folder. This file will allow the main API caller to automatically manage API rate limits per hour / day.
+11) To make these keys accessible in your project, run the file initialiser.py, this will allow you to enter your saved API tokens/keys for each site. The script will automatically save the tokens into a JSON file in your data folder. This file will allow the main API caller to automatically manage API rate limits per hour / day.
 
                 python -m initialiser
 
 12) To begin creating green stock datasets, run stock_gui.py:
 
                 python -m stock_gui
+
 
 
 

@@ -359,6 +359,6 @@ else:
         ax.set_ylabel("Percentage Change (%)")
         ax.set_xticklabels([]) 
         ax.set_xlabel("")
-        plt.savefig("barplot.png", dpi=300, bbox_inches="tight") 
+        plt.savefig("data/barplot.png", dpi=300, bbox_inches="tight") 
         plt.close()
 

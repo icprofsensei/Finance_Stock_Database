@@ -15,7 +15,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from itertools import islice
 from specific import BrowserApp, LocatorApp
-
+import yfinance as yf
 
 tickers = pl.read_csv("tickers.csv", truncate_ragged_lines=True).to_dicts()
 class SelectorApp:
@@ -119,7 +119,17 @@ else:
             data = json.load(filejson)
         count = 0
         for t in tickers:
-            print(count)
+            ticker = t['Ticker']
+            if ticker == '688223':
+                  ticker = 'ZJS1.BE'
+            elif ticker == '301278':
+                  ticker = '301278.SZ'
+            elif ticker == 'NEEPRS':
+                  ticker = '0K80.L'
+            else:
+                  ticker = ticker
+                    
+            tablename = ticker.split('.')[0]
             count += 1
             if (len(data['AlphaVantage']['CALLS-DAY'].keys()) >= 1 and date not in data['AlphaVantage']['CALLS-DAY'].keys()) or (len(data['Tiingo']['CALLS-DAY'].keys()) >= 1 and date not in data['Tiingo']['CALLS-DAY'].keys()):
                 data['AlphaVantage']['CALLS-DAY'] = {}
@@ -131,40 +141,30 @@ else:
             duckdb_path = f"data/mini_temp.db"
             con = duckdb.connect(database=duckdb_path, read_only=False) 
             try:
-                apikey = data['AlphaVantage']['API-KEY']
-                url = f"{data['AlphaVantage']['URL']}{t['Ticker']}&apikey={apikey}"
-                alpharesponse = requests.get(url)
-                alphadata = alpharesponse.json()['Time Series (Daily)']
-                try:
-                    dates= list(alphadata.keys())
-                    openingprices = []
-                    for d in dates:
-                        openingprices.append({'date':d,'OPENING_PRICE':alphadata[d]['1. open']})
-                    pricedf = pl.DataFrame(openingprices)
-                    pricedf = pricedf.with_columns(
-                        pl.col('date').str.strptime(pl.Date, format="%Y-%m-%d").alias("DATE"),
+                stock = yf.Ticker(ticker)
+                end_date = nowobj.strftime("%Y-%m-%d")
+                start_date = (nowobj - datetime.timedelta(days=10)).strftime("%Y-%m-%d")
+                historical_data = stock.history(start=start_date, end=end_date).to_dict(orient = 'index')
+                dates= list(historical_data.keys())
+                openingprices = []
+                for d in dates:
+                        openingprices.append({'date':d,'OPENING_PRICE':historical_data[d]['Open']})
+                pricedf = pl.DataFrame(openingprices)
+                pricedf = pricedf.with_columns(
+                        pl.col('date').dt.to_string().str.strptime(pl.Datetime,"%Y-%m-%d %H:%M:%S%.f%z").alias("DATE"),
                         pl.col('OPENING_PRICE').cast(pl.Float64)
                     ).select('DATE','OPENING_PRICE' ).sort("DATE")
-                    if len(pricedf.columns) > 1:
-                        if date not in data['AlphaVantage']['CALLS-DAY'].keys():
-                                data['AlphaVantage']['CALLS-DAY'][date] = 1
-                        else:
-                                data['AlphaVantage']['CALLS-DAY'][date] += 1
-                        if hour not in data['AlphaVantage']['CALLS-HOUR'].keys():
-                                data['AlphaVantage']['CALLS-HOUR'][hour] = 1
-                        else:
-                                data['AlphaVantage']['CALLS-HOUR'][hour] += 1
-                        apidictdata = json.dumps(data, indent = 4)
-                        with open("data/apidictdata.json", "w") as f:
-                            f.write(apidictdata)
+                try:
+                    
+                    con.execute(f"DROP TABLE IF EXISTS TICKER_{tablename}")
+                    con.execute(f""" CREATE TABLE IF NOT EXISTS
+                                TICKER_{tablename}
+                                AS 
+                                SELECT *
+                                FROM pricedf;""")
+                    con.close()
                 except Exception as e:
-                    print(e)
-                con.execute(f""" CREATE TABLE IF NOT EXISTS
-                            TICKER_{t['Ticker']}
-                            AS 
-                            SELECT *
-                            FROM pricedf;""")
-                con.close()
+                      print(e)
 
             except Exception as e:
                 print(e)
@@ -201,6 +201,6 @@ else:
         ax.set_ylabel("Percentage Change (%)")
         ax.set_xticklabels([]) 
         ax.set_xlabel("")
-        plt.savefig("data/barplot.png", dpi=300, bbox_inches="tight") 
+        plt.savefig("data/barplotnew.png", dpi=300, bbox_inches="tight") 
         plt.close()
 

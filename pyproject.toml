@@ -13,4 +13,5 @@ dependencies = [
     "tkcalendar>=1.6.1",
     "tksheet>=7.5.19",
     "tqdm>=4.67.1",
+    "yfinance>=0.2.66",
 ]

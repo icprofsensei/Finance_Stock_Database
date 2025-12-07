@@ -22,7 +22,7 @@ class SelectorApp:
      def __init__(self, root):
             self.root = root
             self.root.title('Path Selector')
-            self.root.geometry("400x150")
+            self.root.geometry("450x200")
             self.choice = ""
             self.create_widgets()
      def submit(self):
@@ -35,8 +35,10 @@ class SelectorApp:
             self.path = tk.StringVar(value = "Image")
             PathLabel = tk.Label(self.root, text= "API Option: ")
             PathLabel.pack(pady=4)
-            SpecificStock = tk.Radiobutton(self.root, text = "Specific Stock", variable = self.path, value = 'SpecificStock')
+            SpecificStock = tk.Radiobutton(self.root, text = "Specific Stock value", variable = self.path, value = 'SpecificStock')
             SpecificStock.pack(pady=4)
+            HistRep = tk.Radiobutton(self.root, text = "Specific Stock historical reports", variable = self.path, value = 'HistRep')
+            HistRep.pack(pady=4)
             Overview = tk.Radiobutton(self.root, text = "Overview", variable = self.path, value = "Overview")
             Overview.pack(pady=4)
 
@@ -64,7 +66,7 @@ if app.choice == 'SpecificStock':
             data = json.load(filejson)
      # LAUNCH GUI
         root = tk.Tk()
-        locapp = LocatorApp(root, data, datefeatures)
+        locapp = LocatorApp(root, data, datefeatures, 'dates')
         root.mainloop()
 
         apikey = data['Tiingo']['API-KEY']
@@ -114,6 +116,58 @@ if app.choice == 'SpecificStock':
 
         except Exception as e:
             print(e)
+elif app.choice =='HistRep':
+      print('Using AlphaVantage')
+      with open("data/apidictdata.json") as filejson:
+            data = json.load(filejson)
+      count = 0
+      root = tk.Tk()
+      locapp = LocatorApp(root, data, datefeatures, 'nodates')
+      root.mainloop()
+      if (date not in data['AlphaVantage']['CALLS-DAY'].keys()) and (date not in data['Tiingo']['CALLS-DAY'].keys()):
+        data['AlphaVantage']['CALLS-DAY'] = {}
+        data['AlphaVantage']['CALLS-HOUR'] = {}
+        data['Tiingo']['CALLS-DAY'] = {}
+        data['Tiingo']['CALLS-HOUR'] = {}
+        with open("data/apidictdata.json", "w") as f:
+                    f.write(json.dumps(data, indent = 4))
+      duckdb_path = f"{locapp.output_dir}/stocks.db"
+      con = duckdb.connect(database=duckdb_path, read_only=False) 
+      try:
+        apikey = data['AlphaVantage']['API-KEY']
+        url = f"{data['AlphaVantage']['URL']}{locapp.feature}&apikey={apikey}"
+        alpharesponse = requests.get(url)
+        alphadata = alpharesponse.json()['quarterlyReports']
+        try:
+            cashflowdata = pl.from_dicts(alphadata)
+            cashflowdata = cashflowdata.with_columns(
+                pl.col("fiscalDateEnding").str.strptime(pl.Date, format="%Y-%m-%d").alias("DATE")
+            ).sort("DATE")
+            if len(cashflowdata.columns) > 1:
+                if date not in data['AlphaVantage']['CALLS-DAY'].keys():
+                        data['AlphaVantage']['CALLS-DAY'][date] = 1
+                else:
+                        data['AlphaVantage']['CALLS-DAY'][date] += 1
+                if hour not in data['AlphaVantage']['CALLS-HOUR'].keys():
+                        data['AlphaVantage']['CALLS-HOUR'][hour] = 1
+                else:
+                        data['AlphaVantage']['CALLS-HOUR'][hour] += 1
+                apidictdata = json.dumps(data, indent = 4)
+                with open("data/apidictdata.json", "w") as f:
+                    f.write(apidictdata)
+        except Exception as e:
+            print(e)
+
+        con.execute(f"DROP TABLE IF EXISTS CASHFLOW_{locapp.feature}")
+        con.execute(f""" CREATE TABLE IF NOT EXISTS
+                    CASHFLOW_{locapp.feature}
+                    AS 
+                    SELECT *
+                    FROM cashflowdata;""")
+        con.close()
+      except Exception as e:
+        print(e)
+
 else:
         with open("data/apidictdata.json") as filejson:
             data = json.load(filejson)

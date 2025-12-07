@@ -70,7 +70,7 @@ class BrowserApp:
 # Stock Browser
 
 class LocatorApp:
-    def __init__(self, root, data, datefeatures):
+    def __init__(self, root, data, datefeatures, datepicker):
         self.root = root
         self.data = data
         self.datefeatures = datefeatures
@@ -80,6 +80,7 @@ class LocatorApp:
         self.enddate = ""
         self.output_dir = ""
         self.feature = ""
+        self.datepicker = datepicker
         self.create_widgets()
 
     def launch_browser(self):
@@ -101,14 +102,22 @@ class LocatorApp:
             self.feature =self.featuretext.get("1.0", tk.END).strip()
         else:
             self.feature =self.featuretext.get().strip()
-        if not self.startdate or not self.enddate  or not self.featuretext or not self.outputloc:
-            messagebox.showwarning("Input Error: Complete all fields")
+        if self.datepicker == 'date':
+            if not self.startdate or not self.enddate  or not self.featuretext or not self.outputloc:
+                messagebox.showwarning("Input Error: Complete all fields")
+            else:
+                try:
+                    self.root.destroy()
+                except Exception as e:
+                    messagebox.showerror(f"Error {e} occurred")
         else:
-            try:
-                self.root.destroy()
-            except Exception as e:
-                messagebox.showerror(f"Error {e} occurred")
-
+             if not self.featuretext or not self.outputloc:
+                messagebox.showwarning("Input Error: Complete all fields")
+             else:
+                try:
+                    self.root.destroy()
+                except Exception as e:
+                    messagebox.showerror(f"Error {e} occurred")
     def select_start_date(self):
             self.startdate = self.calstart.get_date()
             if self.startdate:
@@ -131,34 +140,42 @@ class LocatorApp:
         featurebutton = tk.Button(self.root, text = "Browse available green tickers:", command = self.launch_browser)
         featurebutton.grid(row=0, column=2, sticky="w",pady=5)
 
-        startlab = tk.Label(self.root, text= "Start Date")
-        startlab.grid(row=1, column=0, sticky="w",pady=5)
-        self.calstart = Calendar(self.root, selectmode = 'day',
-               year = 2025, month = 5,
-               day = 1, date_pattern='yyyy-mm-dd')
-        self.calstart.grid(row=1, column=1, sticky="w",pady=5)
-        self.startdatetext = tk.Entry(self.root, width = 50)
-        self.startdatetext.grid(row=2, column=1, sticky="w",pady=5)
-        startdatebutton = tk.Button(self.root, text = "Choose start date", command = self.select_start_date)
-        startdatebutton.grid(row=3, column=1, sticky="w",pady=5)
+        if self.datepicker == 'dates':
+            startlab = tk.Label(self.root, text= "Start Date")
+            startlab.grid(row=1, column=0, sticky="w",pady=5)
+            self.calstart = Calendar(self.root, selectmode = 'day',
+                year = 2025, month = 5,
+                day = 1, date_pattern='yyyy-mm-dd')
+            self.calstart.grid(row=1, column=1, sticky="w",pady=5)
+            self.startdatetext = tk.Entry(self.root, width = 50)
+            self.startdatetext.grid(row=2, column=1, sticky="w",pady=5)
+            startdatebutton = tk.Button(self.root, text = "Choose start date", command = self.select_start_date)
+            startdatebutton.grid(row=3, column=1, sticky="w",pady=5)
 
-        endlab = tk.Label(self.root, text= "End Date")
-        endlab.grid(row=4, column=0, sticky="w",pady=5)
-        self.calend = Calendar(self.root, selectmode = 'day',
-               year = 2025, month = 9,
-               day = 30, date_pattern='yyyy-mm-dd')
-        self.calend.grid(row=4, column=1, sticky="w",pady=5)
-        self.enddatetext = tk.Entry(self.root, width = 50)
-        self.enddatetext.grid(row=5, column=1, sticky="w",pady=5)
-        enddatebutton = tk.Button(self.root, text = "Choose end date", command = self.select_end_date)
-        enddatebutton.grid(row=6, column=1, sticky="w",pady=5)
+            endlab = tk.Label(self.root, text= "End Date")
+            endlab.grid(row=4, column=0, sticky="w",pady=5)
+            self.calend = Calendar(self.root, selectmode = 'day',
+                year = 2025, month = 9,
+                day = 30, date_pattern='yyyy-mm-dd')
+            self.calend.grid(row=4, column=1, sticky="w",pady=5)
+            self.enddatetext = tk.Entry(self.root, width = 50)
+            self.enddatetext.grid(row=5, column=1, sticky="w",pady=5)
+            enddatebutton = tk.Button(self.root, text = "Choose end date", command = self.select_end_date)
+            enddatebutton.grid(row=6, column=1, sticky="w",pady=5)
 
-        outputlab = tk.Label(self.root, text= "Directory of database")
-        outputlab.grid(row=7, column=0, sticky="w",pady=4)
-        self.outputloc = tk.Entry(self.root, width = 50)
-        self.outputloc.grid(row=7, column=1, sticky="w",pady=4)
-        outputbutton = tk.Button(self.root, text = "Browse", command = self.select_output_dir)
-        outputbutton.grid(row=8, column=1, sticky="w",pady=4)
+            outputlab = tk.Label(self.root, text= "Directory of database")
+            outputlab.grid(row=7, column=0, sticky="w",pady=4)
+            self.outputloc = tk.Entry(self.root, width = 50)
+            self.outputloc.grid(row=7, column=1, sticky="w",pady=4)
+            outputbutton = tk.Button(self.root, text = "Browse", command = self.select_output_dir)
+            outputbutton.grid(row=8, column=1, sticky="w",pady=4)
+        else:
+            outputlab = tk.Label(self.root, text= "Directory of database")
+            outputlab.grid(row=1, column=1, sticky="w",pady=5)
+            self.outputloc = tk.Entry(self.root, width = 50)
+            self.outputloc.grid(row=4, column=1, sticky="w",pady=5)
+            outputbutton = tk.Button(self.root, text = "Browse", command = self.select_output_dir)
+            outputbutton.grid(row=7, column=1, sticky="w",pady=4)
         
         if len(data['Tiingo']['CALLS-HOUR'].keys()) >=1 and datefeatures['DATE'] in data['Tiingo']['CALLS-DAY'].keys():
             if datefeatures['HOUR'] not in data['Tiingo']['CALLS-HOUR'].keys():

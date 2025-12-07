@@ -19,7 +19,6 @@ class LocatorApp:
         self.root.geometry("550x200")
         self.TiingoAPIKey = ""
         self.AlphavantageAPIKey = ""
-        self.FMPAPIKey = ""
         self.create_widgets()
 
     
@@ -27,8 +26,7 @@ class LocatorApp:
     def submit(self):
         self.AlphavantageAPIKey =self.AlphavantageAPIKeytext.get("1.0", tk.END).strip()
         self.TiingoAPIKey = self.TiingoAPIKeytext.get("1.0", tk.END).strip()
-        self.FMPAPIKey = self.FMPAPIKeytext.get("1.0", tk.END).strip()
-        if not self.TiingoAPIKey or not self.AlphavantageAPIKey or not self.FMPAPIKey:
+        if not self.TiingoAPIKey or not self.AlphavantageAPIKey:
             messagebox.showwarning("Input Error: Complete all fields")
         else:
             try:
@@ -49,10 +47,6 @@ class LocatorApp:
         self.AlphavantageAPIKeytext = tk.Text(self.root, width = 50, height = 1)
         self.AlphavantageAPIKeytext.pack(pady=4)
 
-        FMPAPIKeyLab = tk.Label(self.root, text= "FMP API Key: ")
-        FMPAPIKeyLab.pack(pady=4)
-        self.FMPAPIKeytext = tk.Text(self.root, width = 50, height = 1)
-        self.FMPAPIKeytext.pack(pady=4)
 
         submit_button = tk.Button(self.root, text = "Submit", command = self.submit)
         submit_button.pack(pady=4)
@@ -74,14 +68,10 @@ apidict = {
     'AlphaVantage':{
         'API-KEY': app.AlphavantageAPIKey,
         'URL': 'https://www.alphavantage.co/query?function=',
-        "CALLS-DAY": {}
-    },
-    'FMP':{
-        'API-KEY': app.FMPAPIKey,
-        'URL': 'https://financialmodelingprep.com/stable/cash-flow-statement-ttm?',
-        "CALLS-DAY": {}
+        "CALLS-DAY": {},
+        "CALLS-HOUR":{}
     }
 }
 apidictdata = json.dumps(apidict, indent = 4)
-with open("data/apidictdata.json", "w") as f:
+with open("data/apidictdata.json", "a+") as f:
     f.write(apidictdata)

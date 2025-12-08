@@ -35,6 +35,7 @@ class QueryEngine():
         query_submit_button.pack(pady = 5)
         self.sheet = tksheet.Sheet(self.root)
         self.sheet.pack(expand = True, fill = 'both')
+        self.sheet.enable_bindings("column_width_resize")
 
 root = tk.Tk()
 app= QueryEngine(root)

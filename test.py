@@ -1,7 +1,16 @@
-import requests
+import duckdb as ddb
+import polars as pl
 
-headers = {
-    'Content-Type': 'application/json'
-}
-requestResponse = requests.get("https://www.alphavantage.co/query?function=BALANCE_SHEET&symbol=FSLR&apikey=U4UFMVF87NKSHS2Y")
-print(requestResponse.json())
+
+def executer(sql):
+    con = ddb.connect("data/stocks.db")
+    result = con.execute(sql).pl()
+    con.close()
+    return result
+
+tables = executer("SHOW ALL TABLES;")
+print(tables)
+
+FSLR = executer("SELECT * FROM CASHFLOW_FSLR;")
+print(FSLR)
+

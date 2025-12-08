@@ -142,7 +142,7 @@ elif app.choice =='HistRep':
             cashflowdata = pl.from_dicts(alphadata)
             cashflowdata = cashflowdata.with_columns(
                 pl.col("fiscalDateEnding").str.strptime(pl.Date, format="%Y-%m-%d").alias("DATE")
-            ).sort("DATE")
+            ).sort("DATE").drop("fiscalDateEnding")
             if len(cashflowdata.columns) > 1:
                 if date not in data['AlphaVantage']['CALLS-DAY'].keys():
                         data['AlphaVantage']['CALLS-DAY'][date] = 1

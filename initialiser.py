@@ -67,7 +67,8 @@ apidict = {
     },
     'AlphaVantage':{
         'API-KEY': app.AlphavantageAPIKey,
-        'URL': "https://www.alphavantage.co/query?function=CASH_FLOW&symbol=",
+        'URLCASHFLOW': "https://www.alphavantage.co/query?function=CASH_FLOW&symbol=",
+        'URLBALANCESHEET': "https://www.alphavantage.co/query?function=BALANCE_SHEET&symbol=",
         "CALLS-DAY": {},
         "CALLS-HOUR":{}
     }

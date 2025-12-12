@@ -69,6 +69,7 @@ apidict = {
         'API-KEY': app.AlphavantageAPIKey,
         'URLCASHFLOW': "https://www.alphavantage.co/query?function=CASH_FLOW&symbol=",
         'URLBALANCESHEET': "https://www.alphavantage.co/query?function=BALANCE_SHEET&symbol=",
+        'URLINCOMESTATEMENT': "https://www.alphavantage.co/query?function=INCOME_STATEMENT&symbol=",
         "CALLS-DAY": {},
         "CALLS-HOUR":{}
     }

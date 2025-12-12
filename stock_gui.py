@@ -22,7 +22,7 @@ class SelectorApp:
      def __init__(self, root):
             self.root = root
             self.root.title('Path Selector')
-            self.root.geometry("450x200")
+            self.root.geometry("450x250")
             self.choice = ""
             self.create_widgets()
      def submit(self):
@@ -41,6 +41,8 @@ class SelectorApp:
             CASHHistRep.pack(pady=4)
             BALANCEHistRep = tk.Radiobutton(self.root, text = "Specific Stock BALANCE", variable = self.path, value = 'BALANCEHIST')
             BALANCEHistRep.pack(pady=4)
+            INCOMEHistRep = tk.Radiobutton(self.root, text = "Specific Stock INCOME", variable = self.path, value = 'INCOMEHIST')
+            INCOMEHistRep.pack(pady=4)
             Overview = tk.Radiobutton(self.root, text = "Overview", variable = self.path, value = "Overview")
             Overview.pack(pady=4)
 
@@ -214,6 +216,57 @@ elif app.choice =='BALANCEHIST':
         con.execute(f"DROP TABLE IF EXISTS CASHFLOW_{locapp.feature}")
         con.execute(f""" CREATE TABLE IF NOT EXISTS
                     BALANCESHEET_{locapp.feature}
+                    AS 
+                    SELECT *
+                    FROM cashflowdata;""")
+        con.close()
+      except Exception as e:
+        print(e)
+elif app.choice =='INCOMEHIST':
+      print('Using AlphaVantage')
+      with open("data/apidictdata.json") as filejson:
+            data = json.load(filejson)
+      count = 0
+      root = tk.Tk()
+      locapp = LocatorApp(root, data, datefeatures, 'nodates')
+      root.mainloop()
+      if (date not in data['AlphaVantage']['CALLS-DAY'].keys()) and (date not in data['Tiingo']['CALLS-DAY'].keys()):
+        data['AlphaVantage']['CALLS-DAY'] = {}
+        data['AlphaVantage']['CALLS-HOUR'] = {}
+        data['Tiingo']['CALLS-DAY'] = {}
+        data['Tiingo']['CALLS-HOUR'] = {}
+        with open("data/apidictdata.json", "w") as f:
+                    f.write(json.dumps(data, indent = 4))
+      duckdb_path = f"{locapp.output_dir}/stocks.db"
+      con = duckdb.connect(database=duckdb_path, read_only=False) 
+      try:
+        apikey = data['AlphaVantage']['API-KEY']
+        url = f"{data['AlphaVantage']['URLINCOMESTATEMENT']}{locapp.feature}&apikey={apikey}"
+        alpharesponse = requests.get(url)
+        alphadata = alpharesponse.json()['quarterlyReports']
+        try:
+            cashflowdata = pl.from_dicts(alphadata)
+            cashflowdata = cashflowdata.with_columns(
+                pl.col("fiscalDateEnding").str.strptime(pl.Date, format="%Y-%m-%d").alias("DATE")
+            ).sort("DATE").drop("fiscalDateEnding")
+            if len(cashflowdata.columns) > 1:
+                if date not in data['AlphaVantage']['CALLS-DAY'].keys():
+                        data['AlphaVantage']['CALLS-DAY'][date] = 1
+                else:
+                        data['AlphaVantage']['CALLS-DAY'][date] += 1
+                if hour not in data['AlphaVantage']['CALLS-HOUR'].keys():
+                        data['AlphaVantage']['CALLS-HOUR'][hour] = 1
+                else:
+                        data['AlphaVantage']['CALLS-HOUR'][hour] += 1
+                apidictdata = json.dumps(data, indent = 4)
+                with open("data/apidictdata.json", "w") as f:
+                    f.write(apidictdata)
+        except Exception as e:
+            print(e)
+
+        con.execute(f"DROP TABLE IF EXISTS CASHFLOW_{locapp.feature}")
+        con.execute(f""" CREATE TABLE IF NOT EXISTS
+                    INCOMESTATEMENT_{locapp.feature}
                     AS 
                     SELECT *
                     FROM cashflowdata;""")

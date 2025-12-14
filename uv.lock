@@ -284,6 +284,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "duckdb" },
+    { name = "matplotlib" },
     { name = "polars" },
     { name = "pyarrow" },
     { name = "requests" },
@@ -297,6 +298,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "duckdb", specifier = ">=1.4.2" },
+    { name = "matplotlib", specifier = ">=3.10.7" },
     { name = "polars", specifier = ">=1.35.2" },
     { name = "pyarrow", specifier = ">=22.0.0" },
     { name = "requests", specifier = ">=2.32.5" },

@@ -1,20 +1,20 @@
-Stock,Ticker
-Sunrun,RUN
-First Solar,FSLR
-Enphase Energy Inc,ENPH
-SPDR S&P Kensho Clean Power ETF,CNRG
-Engie SA,ENGIY
-Jinko Solar,688223
-Canadian Solar Inc,CSIQ
-QC Solar,301278
-P2 Solar Inc,PTOS
-NextEra Energy Inc,NEEPRS
-Daqo New Energy Corp,DQ
-Orsted A/S,DNNGY,
-Vestas Wind Systems AS,VWDRY
-Brookfield Renewable Partners LP,BEP
-Iberdrola S.A,IBDRY
-Array Technologies,ARRY
-Shoals Technologies,SHLS
-TOYO Co,TOYO
-FTC Solar,FTCI
+Stock,Ticker,Renewable Main,Renewable SubCategory
+Sunrun,RUN,Solar,Battery Storage
+First Solar,FSLR,Solar,Module Manufacturer
+Enphase Energy Inc,ENPH,Solar,Battery Storage
+SPDR S&P Kensho Clean Power ETF,CNRG,General,ETF
+Engie SA,ENGIY,General,General Renewables
+Jinko Solar,688223,Solar,Module Manufacturer
+Canadian Solar Inc,CSIQ,Solar,Module Manufacturer
+QC Solar,301278,Solar,Infrastructure Manufacturer
+P2 Solar Inc,PTOS,Solar,Research And Development
+NextEra Energy Inc,NEEPRS,General,General Renewables
+Daqo New Energy Corp,DQ,Solar,Polysilicon Manufacturer
+Orsted A/S,DNNGY,Wind,Offshore Wind Full Cycle
+Vestas Wind Systems AS,VWDRY,Wind,All Wind Full Cycle
+Brookfield Renewable Partners LP,BEP,General,Investment
+Iberdrola S.A,IBDRY,General,General Renewables
+Array Technologies,ARRY,Solar,Solar Trackers
+Shoals Technologies,SHLS,Solar,EBOS
+TOYO Co,TOYO,Solar,Module Manufacturer
+FTC Solar,FTCI,Solar,Solar Trackers

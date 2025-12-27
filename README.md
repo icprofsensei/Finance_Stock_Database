@@ -62,13 +62,20 @@ Pre-requisites: Python or Conda is installed on your machine. The following tuto
 
     a) Select 'Overview' : View an overview of the top 3 biggest gainers and losers in the climate stock portfolio over the past 5 days. The result will be saved as an image in your data folder.
 
-    b) Select 'Specific Stock': Create an in-memory duck db database for a specific stock which you can then query to create data extracts for your desired date range.
+    b) Select 'Specific Stock value': Create an in-memory duck db database for a specific stock which you can then query to create data extracts for your desired date range.
+
+    c) Select 'Specific Stock CASH': Create an in-memory duck db database for the specific stock's cashflow statement (as a table) for a desired date range.
+
+    d) Select 'Specific Stock BALANCE': Create an in-memory duck db database for the specific stock's balance sheet (as a table) for a desired date range.
+
+    e) Select 'Specific Stock INCOME': Create an in-memory duck db database for the specific stock's income statement (as a table) for a desired date range.
 
     API rate management is handled by updating the JSON file with your current usage to ensure that you do not exceed rate limits.
 
 Credits:
 
 I will look to publish this on the Tiingo developer's program to increase visibility on green stock data projects.
+
 
 
 

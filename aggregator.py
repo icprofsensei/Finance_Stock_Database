@@ -68,3 +68,17 @@ try:
     plt.show()
 except Exception as e:
     print(e)
+
+
+try:
+    x = completevals["DATE"].to_list()
+    y = completevals["TOTALSHAREHOLDEREQUITY"].to_list()
+
+    plt.plot(x, y)
+    plt.xlabel("DATE")
+    plt.ylabel("ASSETS")
+    plt.title("ASSETS OVER TIME")
+    plt.show()
+except Exception as e:
+    print(e)
+

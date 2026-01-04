@@ -110,6 +110,7 @@ if app.choice == 'SpecificStock':
             except Exception as e:
                 print(e)
             lazyframe = lazyframe.with_columns([pl.col("date").str.slice(0,10), pl.col("close").cast(pl.Float64), pl.col("high").cast(pl.Float64), pl.col("low").cast(pl.Float64), pl.col("volume").cast(pl.Int64)])
+            con.execute(f"DROP TABLE IF EXISTS TICKER_{locapp.feature}")
             con.execute(f""" CREATE TABLE IF NOT EXISTS
                         TICKER_{locapp.feature}
                         AS 

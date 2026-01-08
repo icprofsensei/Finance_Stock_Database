@@ -72,6 +72,10 @@ apidict = {
         'URLINCOMESTATEMENT': "https://www.alphavantage.co/query?function=INCOME_STATEMENT&symbol=",
         "CALLS-DAY": {},
         "CALLS-HOUR":{}
+    },
+    'Yfinance':{
+        "CALLS-DAY":{},
+        "CALLS-HOUR": {}
     }
 }
 apidictdata = json.dumps(apidict, indent = 4)

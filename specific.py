@@ -67,6 +67,45 @@ class BrowserApp:
         submitrow = tk.Button(self.stock_browser_root, text = "Submit", command = self.submit)
         submitrow.pack(pady = 10)    
 
+
+class YFBrowserApp:
+    def __init__(self, stock_browser_root, tickers):
+        self.stock_browser_root = stock_browser_root
+        self.tickers = tickers
+        self.stock_browser_root.title('Stock Browser')
+        self.stock_browser_root.geometry("550x350")
+        self.curr_row = ""
+        self.curr_col = ""
+        self.finalticker = ""
+        self.create_widgets()
+    
+    def submit(self):
+                rowdata = self.tickers[self.curr_row]
+                try:
+                    self.finalticker = rowdata['yfticker']
+                    self.stock_browser_root.destroy()
+                    
+                except Exception as e:
+                    messagebox.showerror(f"Error {e} occurred")
+    def on_cell_select(self, event):
+        row = event['selected'][0]
+        col = event['selected'][1]
+        self.curr_row = row
+        self.curr_col = col
+    def create_widgets(self):
+        cols = list(self.tickers[0].keys())
+        rows = [list(row.values()) for row in self.tickers]
+        self.sheet = tksheet.Sheet(self.stock_browser_root)
+        self.sheet.pack(expand = True, fill = 'both')
+        self.sheet.headers(cols)
+        self.sheet.set_sheet_data(rows)
+        self.sheet.enable_bindings("single_select", "row_select", "arrowkeys", "right_click_popup_menu")
+        self.sheet.extra_bindings("cell_select", self.on_cell_select)
+        submitrow = tk.Button(self.stock_browser_root, text = "Submit", command = self.submit)
+        submitrow.pack(pady = 10)   
+
+
+
 # Stock Browser
 
 class LocatorApp:
@@ -205,3 +244,98 @@ class LocatorApp:
 
         submit_button = tk.Button(self.root, text = "Submit", command = self.submit)
         submit_button.grid(row=11, column=1, sticky="w",pady=4)
+
+
+class YFLocatorApp:
+    def __init__(self, root, data, datefeatures):
+        self.root = root
+        self.data = data
+        self.datefeatures = datefeatures
+        self.root.title('File Selector')
+        self.root.geometry("600x250")
+        self.feature = ""
+        self.output_dir = ""
+        self.create_widgets()
+
+    def launch_browser(self):
+            stock_browser_root = tk.Toplevel(self.root)
+            tickerapp = YFBrowserApp(stock_browser_root, tickers)
+            stock_browser_root.wait_window(stock_browser_root)
+            self.featuretext.delete(0, tk.END)
+            self.featuretext.insert(0, tickerapp.finalticker)
+
+    def select_output_dir(self):
+        self.output_dir = filedialog.askdirectory(title = "Select the folder where the database will be created: ")
+        if self.output_dir:
+            self.outputloc.delete(0, tk.END)
+            self.outputloc.insert(0, self.output_dir)
+
+    def submit(self):
+        if type(self.featuretext) == str:
+            self.feature =self.featuretext.get("1.0", tk.END).strip()
+        else:
+            self.feature =self.featuretext.get().strip()
+        if not self.featuretext:
+            messagebox.showwarning("Input Error: Complete all fields")
+        else:
+            try:
+                self.root.destroy()
+            except Exception as e:
+                messagebox.showerror(f"Error {e} occurred")
+        
+
+    def create_widgets(self):
+        
+        featurelab = tk.Label(self.root, text= "Ticker: ")
+        featurelab.grid(row=0, column=0, sticky="w",pady=5)
+        self.featuretext = tk.Entry(self.root, width = 50)
+        self.featuretext.grid(row=0, column=1, sticky="w",pady=5)
+        featurebutton = tk.Button(self.root, text = "Browse available green tickers:", command = self.launch_browser)
+        featurebutton.grid(row=0, column=2, sticky="w",pady=5)
+        outputlab = tk.Label(self.root, text= "Directory of database")
+        outputlab.grid(row=1, column=0, sticky="w",pady=4)
+        self.outputloc = tk.Entry(self.root, width = 50)
+        self.outputloc.grid(row=2, column=1, sticky="w",pady=4)
+        outputbutton = tk.Button(self.root, text = "Browse", command = self.select_output_dir)
+        outputbutton.grid(row=3, column=1, sticky="w",pady=4)
+        if len(data['Tiingo']['CALLS-HOUR'].keys()) >=1 and datefeatures['DATE'] in data['Tiingo']['CALLS-DAY'].keys():
+            if datefeatures['HOUR'] not in data['Tiingo']['CALLS-HOUR'].keys():
+                tiingostatuslab = tk.Label(self.root, text= f"""Tiingo Usage:
+                                        Calls this day: {data['Tiingo']['CALLS-DAY'][datefeatures['DATE']]} /1000;/p
+                                        """)
+                tiingostatuslab.grid(row=4, column=1, sticky="w",pady=4)
+            else:
+                tiingostatuslab = tk.Label(self.root, text= f"""Tiingo Usage:
+                                    Calls this hour: {data['Tiingo']['CALLS-HOUR'][datefeatures['HOUR']]} /50,
+                                        Calls this day: {data['Tiingo']['CALLS-DAY'][datefeatures['DATE']]} /1000
+                                        """)
+                tiingostatuslab.grid(row=4, column=1, sticky="w",pady=4)
+        if len(data['AlphaVantage']['CALLS-HOUR'].keys()) >=1 and datefeatures['DATE'] in data['AlphaVantage']['CALLS-DAY'].keys():
+            if datefeatures['DATE'] not in data['AlphaVantage']['CALLS-DAY'].keys():
+                alphastatuslab = tk.Label(self.root, text= f"""AlphaVantage Usage:
+                                        Calls this day: {data['AlphaVantage']['CALLS-DAY'][datefeatures['DATE']]} /25
+                                        """)
+                alphastatuslab.grid(row=5, column=1, sticky="w",pady=4)
+            else:
+                alphastatuslab = tk.Label(self.root, text= f"""AlphaVantage Usage:
+                                    Calls this hour: {data['AlphaVantage']['CALLS-HOUR'][datefeatures['HOUR']]},
+                                        Calls this day: {data['AlphaVantage']['CALLS-DAY'][datefeatures['DATE']]} /25
+                                        """)
+                alphastatuslab.grid(row=5, column=1, sticky="w",pady=4)
+        if len(data['Yfinance']['CALLS-HOUR'].keys()) >=1 and datefeatures['DATE'] in data['Yfinance']['CALLS-DAY'].keys():
+            if datefeatures['DATE'] not in data['Yfinance']['CALLS-DAY'].keys():
+                yfinlab = tk.Label(self.root, text= f"""Yfinance Usage:
+                                        Calls this day: {data['Yfinance']['CALLS-DAY'][datefeatures['DATE']]} 
+                                        """)
+                yfinlab.grid(row=6, column=1, sticky="w",pady=4)
+            else:
+                yfinlab = tk.Label(self.root, text= f"""Yfinance Usage:
+                                    Calls this hour: {data['Yfinance']['CALLS-HOUR'][datefeatures['HOUR']]} / 2000,
+                                        Calls this day: {data['Yfinance']['CALLS-DAY'][datefeatures['DATE']]} 
+                                        """)
+                yfinlab.grid(row=6, column=1, sticky="w",pady=4)
+
+        submit_button = tk.Button(self.root, text = "Submit", command = self.submit)
+        submit_button.grid(row=7, column=1, sticky="w",pady=4)
+
+

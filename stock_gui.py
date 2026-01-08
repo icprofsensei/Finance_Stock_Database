@@ -14,7 +14,7 @@ import time
 import seaborn as sns
 import matplotlib.pyplot as plt
 from itertools import islice
-from specific import BrowserApp, LocatorApp
+from specific import BrowserApp, LocatorApp, YFLocatorApp, YFBrowserApp
 import yfinance as yf
 
 tickers = pl.read_csv("tickers.csv", truncate_ragged_lines=True).to_dicts()
@@ -22,7 +22,7 @@ class SelectorApp:
      def __init__(self, root):
             self.root = root
             self.root.title('Path Selector')
-            self.root.geometry("450x250")
+            self.root.geometry("450x300")
             self.choice = ""
             self.create_widgets()
      def submit(self):
@@ -35,8 +35,10 @@ class SelectorApp:
             self.path = tk.StringVar(value = "Image")
             PathLabel = tk.Label(self.root, text= "API Option: ")
             PathLabel.pack(pady=4)
-            SpecificStock = tk.Radiobutton(self.root, text = "Specific Stock value", variable = self.path, value = 'SpecificStock')
+            SpecificStock = tk.Radiobutton(self.root, text = "Specific Stock Long-term Daily", variable = self.path, value = 'SpecificStock')
             SpecificStock.pack(pady=4)
+            ShortTerm = tk.Radiobutton(self.root, text = "Specific Stock Short-term Hourly", variable = self.path, value = 'SpecificStockHourly')
+            ShortTerm.pack(pady=4)
             CASHHistRep = tk.Radiobutton(self.root, text = "Specific Stock CASH", variable = self.path, value = 'CASHHIST')
             CASHHistRep.pack(pady=4)
             BALANCEHistRep = tk.Radiobutton(self.root, text = "Specific Stock BALANCE", variable = self.path, value = 'BALANCEHIST')
@@ -83,6 +85,15 @@ if app.choice == 'SpecificStock':
             data['AlphaVantage']['CALLS-HOUR'] = {}
             data['Tiingo']['CALLS-DAY'] = {}
             data['Tiingo']['CALLS-HOUR'] = {}
+            data['Yfinance']['CALLS-DAY'] = {}
+            data['Yfinance']['CALLS-HOUR'] = {}
+        if (len(data['AlphaVantage']['CALLS-DAY'].keys()) == 0) and (len(data['Tiingo']['CALLS-DAY'].keys()) == 0) and (len(data['Yfinance']['CALLS-DAY'].keys()) == 0):
+            data['AlphaVantage']['CALLS-DAY'] = {}
+            data['AlphaVantage']['CALLS-HOUR'] = {}
+            data['Tiingo']['CALLS-DAY'] = {}
+            data['Tiingo']['CALLS-HOUR'] = {}
+            data['Yfinance']['CALLS-DAY'] = {}
+            data['Yfinance']['CALLS-HOUR'] = {}
         with open("data/apidictdata.json", "w") as f:
                     f.write(json.dumps(data, indent = 4))
         duckdb_path = f"{locapp.output_dir}/stocks.db"
@@ -121,6 +132,69 @@ if app.choice == 'SpecificStock':
 
         except Exception as e:
             print(e)
+
+elif app.choice == 'SpecificStockHourly':
+        
+    # Open the JSON dictionary file containing the API keys
+        with open("data/apidictdata.json") as filejson:
+            data = json.load(filejson)
+     # LAUNCH GUI
+        root = tk.Tk()
+        locapp = YFLocatorApp(root, data, datefeatures)
+        root.mainloop()
+
+        
+        if (len(data['AlphaVantage']['CALLS-DAY'].keys()) >= 1 and date not in data['AlphaVantage']['CALLS-DAY'].keys()) or (len(data['Tiingo']['CALLS-DAY'].keys()) >= 1 and date not in data['Tiingo']['CALLS-DAY'].keys()) or (len(data['Yfinance']['CALLS-DAY'].keys()) >= 1 and date not in data['Yfinance']['CALLS-DAY'].keys()):
+            data['AlphaVantage']['CALLS-DAY'] = {}
+            data['AlphaVantage']['CALLS-HOUR'] = {}
+            data['Tiingo']['CALLS-DAY'] = {}
+            data['Tiingo']['CALLS-HOUR'] = {}
+            data['Yfinance']['CALLS-DAY'] = {}
+            data['Yfinance']['CALLS-HOUR'] = {}
+        if (len(data['AlphaVantage']['CALLS-DAY'].keys()) == 0) and (len(data['Tiingo']['CALLS-DAY'].keys()) == 0) and (len(data['Yfinance']['CALLS-DAY'].keys()) == 0):
+            data['AlphaVantage']['CALLS-DAY'] = {}
+            data['AlphaVantage']['CALLS-HOUR'] = {}
+            data['Tiingo']['CALLS-DAY'] = {}
+            data['Tiingo']['CALLS-HOUR'] = {}
+            data['Yfinance']['CALLS-DAY'] = {}
+            data['Yfinance']['CALLS-HOUR'] = {}
+        with open("data/apidictdata.json", "w") as f:
+                    f.write(json.dumps(data, indent = 4))
+        duckdb_path = f"{locapp.output_dir}/stocks.db"
+        con = duckdb.connect(database=duckdb_path, read_only=False) 
+        try:
+            result = yf.Ticker(locapp.feature)
+            dataset = result.history(period='2y', interval = '60m')
+            try:
+                print("Reading data to dataframe")
+                lazyframe = pl.from_pandas(dataset, include_index = True).with_columns(pl.col("Datetime").dt.convert_time_zone("UTC").alias("DATETIME")).sort("DATETIME").drop("Datetime")
+                if len(lazyframe.columns) > 1:
+                    if date not in data['Yfinance']['CALLS-DAY'].keys():
+                            data['Yfinance']['CALLS-DAY'][date] = 1
+                    else:
+                            data['Yfinance']['CALLS-DAY'][date] += 1
+                    if hour not in data['Yfinance']['CALLS-HOUR'].keys():
+                            data['Yfinance']['CALLS-HOUR'][hour] = 1
+                    else:
+                            data['Yfinance']['CALLS-HOUR'][hour] += 1
+                    print("Adjusted limits dictionary")
+                    apidictdata = json.dumps(data, indent = 4)
+                    with open("data/apidictdata.json", "w") as f:
+                        f.write(apidictdata)
+            except Exception as e:
+                print(e)
+            lazyframe = lazyframe.with_columns([pl.col("Close").cast(pl.Float64), pl.col("High").cast(pl.Float64), pl.col("Low").cast(pl.Float64), pl.col("Volume").cast(pl.Int64)])
+            con.execute(f"DROP TABLE IF EXISTS TICKER_2YPREV_{locapp.feature}")
+            con.execute(f""" CREATE TABLE IF NOT EXISTS
+                        TICKER_2YPREV_{locapp.feature}
+                        AS 
+                        SELECT *
+                        FROM lazyframe;""")
+            con.close()
+            print("Added dataframe to database")
+
+        except Exception as e:
+            print(e)        
 elif app.choice =='CASHHIST':
       print('Using AlphaVantage')
       with open("data/apidictdata.json") as filejson:
@@ -129,12 +203,21 @@ elif app.choice =='CASHHIST':
       root = tk.Tk()
       locapp = LocatorApp(root, data, datefeatures, 'nodates')
       root.mainloop()
-      if (date not in data['AlphaVantage']['CALLS-DAY'].keys()) and (date not in data['Tiingo']['CALLS-DAY'].keys()):
-        data['AlphaVantage']['CALLS-DAY'] = {}
-        data['AlphaVantage']['CALLS-HOUR'] = {}
-        data['Tiingo']['CALLS-DAY'] = {}
-        data['Tiingo']['CALLS-HOUR'] = {}
-        with open("data/apidictdata.json", "w") as f:
+      if (len(data['AlphaVantage']['CALLS-DAY'].keys()) >= 1 and date not in data['AlphaVantage']['CALLS-DAY'].keys()) or (len(data['Tiingo']['CALLS-DAY'].keys()) >= 1 and date not in data['Tiingo']['CALLS-DAY'].keys()) or (len(data['Yfinance']['CALLS-DAY'].keys()) >= 1 and date not in data['Yfinance']['CALLS-DAY'].keys()):
+            data['AlphaVantage']['CALLS-DAY'] = {}
+            data['AlphaVantage']['CALLS-HOUR'] = {}
+            data['Tiingo']['CALLS-DAY'] = {}
+            data['Tiingo']['CALLS-HOUR'] = {}
+            data['Yfinance']['CALLS-DAY'] = {}
+            data['Yfinance']['CALLS-HOUR'] = {}
+      if (len(data['AlphaVantage']['CALLS-DAY'].keys()) == 0) and (len(data['Tiingo']['CALLS-DAY'].keys()) == 0) and (len(data['Yfinance']['CALLS-DAY'].keys()) == 0):
+            data['AlphaVantage']['CALLS-DAY'] = {}
+            data['AlphaVantage']['CALLS-HOUR'] = {}
+            data['Tiingo']['CALLS-DAY'] = {}
+            data['Tiingo']['CALLS-HOUR'] = {}
+            data['Yfinance']['CALLS-DAY'] = {}
+            data['Yfinance']['CALLS-HOUR'] = {}
+      with open("data/apidictdata.json", "w") as f:
                     f.write(json.dumps(data, indent = 4))
       duckdb_path = f"{locapp.output_dir}/stocks.db"
       con = duckdb.connect(database=duckdb_path, read_only=False) 
@@ -180,13 +263,22 @@ elif app.choice =='BALANCEHIST':
       root = tk.Tk()
       locapp = LocatorApp(root, data, datefeatures, 'nodates')
       root.mainloop()
-      if (date not in data['AlphaVantage']['CALLS-DAY'].keys()) and (date not in data['Tiingo']['CALLS-DAY'].keys()):
-        data['AlphaVantage']['CALLS-DAY'] = {}
-        data['AlphaVantage']['CALLS-HOUR'] = {}
-        data['Tiingo']['CALLS-DAY'] = {}
-        data['Tiingo']['CALLS-HOUR'] = {}
-        with open("data/apidictdata.json", "w") as f:
-                    f.write(json.dumps(data, indent = 4))
+      if (len(data['AlphaVantage']['CALLS-DAY'].keys()) >= 1 and date not in data['AlphaVantage']['CALLS-DAY'].keys()) or (len(data['Tiingo']['CALLS-DAY'].keys()) >= 1 and date not in data['Tiingo']['CALLS-DAY'].keys()) or (len(data['Yfinance']['CALLS-DAY'].keys()) >= 1 and date not in data['Yfinance']['CALLS-DAY'].keys()):
+            data['AlphaVantage']['CALLS-DAY'] = {}
+            data['AlphaVantage']['CALLS-HOUR'] = {}
+            data['Tiingo']['CALLS-DAY'] = {}
+            data['Tiingo']['CALLS-HOUR'] = {}
+            data['Yfinance']['CALLS-DAY'] = {}
+            data['Yfinance']['CALLS-HOUR'] = {}
+      if (len(data['AlphaVantage']['CALLS-DAY'].keys()) == 0) and (len(data['Tiingo']['CALLS-DAY'].keys()) == 0) and (len(data['Yfinance']['CALLS-DAY'].keys()) == 0):
+            data['AlphaVantage']['CALLS-DAY'] = {}
+            data['AlphaVantage']['CALLS-HOUR'] = {}
+            data['Tiingo']['CALLS-DAY'] = {}
+            data['Tiingo']['CALLS-HOUR'] = {}
+            data['Yfinance']['CALLS-DAY'] = {}
+            data['Yfinance']['CALLS-HOUR'] = {}
+      with open("data/apidictdata.json", "w") as f:
+                f.write(json.dumps(data, indent = 4))
       duckdb_path = f"{locapp.output_dir}/stocks.db"
       con = duckdb.connect(database=duckdb_path, read_only=False) 
       try:
@@ -231,12 +323,21 @@ elif app.choice =='INCOMEHIST':
       root = tk.Tk()
       locapp = LocatorApp(root, data, datefeatures, 'nodates')
       root.mainloop()
-      if (date not in data['AlphaVantage']['CALLS-DAY'].keys()) and (date not in data['Tiingo']['CALLS-DAY'].keys()):
-        data['AlphaVantage']['CALLS-DAY'] = {}
-        data['AlphaVantage']['CALLS-HOUR'] = {}
-        data['Tiingo']['CALLS-DAY'] = {}
-        data['Tiingo']['CALLS-HOUR'] = {}
-        with open("data/apidictdata.json", "w") as f:
+      if (len(data['AlphaVantage']['CALLS-DAY'].keys()) >= 1 and date not in data['AlphaVantage']['CALLS-DAY'].keys()) or (len(data['Tiingo']['CALLS-DAY'].keys()) >= 1 and date not in data['Tiingo']['CALLS-DAY'].keys()) or (len(data['Yfinance']['CALLS-DAY'].keys()) >= 1 and date not in data['Yfinance']['CALLS-DAY'].keys()):
+            data['AlphaVantage']['CALLS-DAY'] = {}
+            data['AlphaVantage']['CALLS-HOUR'] = {}
+            data['Tiingo']['CALLS-DAY'] = {}
+            data['Tiingo']['CALLS-HOUR'] = {}
+            data['Yfinance']['CALLS-DAY'] = {}
+            data['Yfinance']['CALLS-HOUR'] = {}
+      if (len(data['AlphaVantage']['CALLS-DAY'].keys()) == 0) and (len(data['Tiingo']['CALLS-DAY'].keys()) == 0) and (len(data['Yfinance']['CALLS-DAY'].keys()) == 0):
+            data['AlphaVantage']['CALLS-DAY'] = {}
+            data['AlphaVantage']['CALLS-HOUR'] = {}
+            data['Tiingo']['CALLS-DAY'] = {}
+            data['Tiingo']['CALLS-HOUR'] = {}
+            data['Yfinance']['CALLS-DAY'] = {}
+            data['Yfinance']['CALLS-HOUR'] = {}
+      with open("data/apidictdata.json", "w") as f:
                     f.write(json.dumps(data, indent = 4))
       duckdb_path = f"{locapp.output_dir}/stocks.db"
       con = duckdb.connect(database=duckdb_path, read_only=False) 
@@ -291,11 +392,20 @@ else:
                     
             tablename = ticker.split('.')[0]
             count += 1
-            if (len(data['AlphaVantage']['CALLS-DAY'].keys()) >= 1 and date not in data['AlphaVantage']['CALLS-DAY'].keys()) or (len(data['Tiingo']['CALLS-DAY'].keys()) >= 1 and date not in data['Tiingo']['CALLS-DAY'].keys()):
+            if (len(data['AlphaVantage']['CALLS-DAY'].keys()) >= 1 and date not in data['AlphaVantage']['CALLS-DAY'].keys()) or (len(data['Tiingo']['CALLS-DAY'].keys()) >= 1 and date not in data['Tiingo']['CALLS-DAY'].keys()) or (len(data['Yfinance']['CALLS-DAY'].keys()) >= 1 and date not in data['Yfinance']['CALLS-DAY'].keys()):
                 data['AlphaVantage']['CALLS-DAY'] = {}
                 data['AlphaVantage']['CALLS-HOUR'] = {}
                 data['Tiingo']['CALLS-DAY'] = {}
                 data['Tiingo']['CALLS-HOUR'] = {}
+                data['Yfinance']['CALLS-DAY'] = {}
+                data['Yfinance']['CALLS-HOUR'] = {}
+            if (len(data['AlphaVantage']['CALLS-DAY'].keys()) == 0) and (len(data['Tiingo']['CALLS-DAY'].keys()) == 0) and (len(data['Yfinance']['CALLS-DAY'].keys()) == 0):
+                data['AlphaVantage']['CALLS-DAY'] = {}
+                data['AlphaVantage']['CALLS-HOUR'] = {}
+                data['Tiingo']['CALLS-DAY'] = {}
+                data['Tiingo']['CALLS-HOUR'] = {}
+                data['Yfinance']['CALLS-DAY'] = {}
+                data['Yfinance']['CALLS-HOUR'] = {}
             with open("data/apidictdata.json", "w") as f:
                         f.write(json.dumps(data, indent = 4))
             duckdb_path = f"data/mini_temp.db"

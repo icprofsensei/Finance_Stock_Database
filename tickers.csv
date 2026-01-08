@@ -1,20 +1,20 @@
-Stock,Ticker,Renewable Main,Renewable SubCategory
-Sunrun,RUN,Solar,Battery Storage
-First Solar,FSLR,Solar,Module Manufacturer
-Enphase Energy Inc,ENPH,Solar,Battery Storage
-SPDR S&P Kensho Clean Power ETF,CNRG,General,ETF
-Engie SA,ENGIY,General,General Renewables
-Jinko Solar,688223,Solar,Module Manufacturer
-Canadian Solar Inc,CSIQ,Solar,Module Manufacturer
-QC Solar,301278,Solar,Infrastructure Manufacturer
-P2 Solar Inc,PTOS,Solar,Research And Development
-NextEra Energy Inc,NEEPRS,General,General Renewables
-Daqo New Energy Corp,DQ,Solar,Polysilicon Manufacturer
-Orsted A/S,DNNGY,Wind,Offshore Wind Full Cycle
-Vestas Wind Systems AS,VWDRY,Wind,All Wind Full Cycle
-Brookfield Renewable Partners LP,BEP,General,Investment
-Iberdrola S.A,IBDRY,General,General Renewables
-Array Technologies,ARRY,Solar,Solar Trackers
-Shoals Technologies,SHLS,Solar,EBOS
-TOYO Co,TOYO,Solar,Module Manufacturer
-FTC Solar,FTCI,Solar,Solar Trackers
+Stock,Ticker,yfticker,Renewable Main,Renewable SubCategory
+Sunrun,RUN,RUN,Solar,Battery Storage
+First Solar,FSLR,FSLR,Solar,Module Manufacturer
+Enphase Energy Inc,ENPH,ENPH,Solar,Battery Storage
+SPDR S&P Kensho Clean Power ETF,CNRG,^KENERGYP,General,ETF
+Engie SA,ENGIY,ENGQF,General,General Renewables
+Jinko Solar,688223,JKS,Solar,Module Manufacturer
+Canadian Solar Inc,CSIQ,CSIQ,Solar,Module Manufacturer
+QC Solar,301278,301278.SZ,Solar,Infrastructure Manufacturer
+P2 Solar Inc,PTOS,PTOS,Solar,Research And Development
+NextEra Energy Inc,NEEPRS,NEE,General,General Renewables
+Daqo New Energy Corp,DQ,DQ,Solar,Polysilicon Manufacturer
+Orsted A/S,DNNGY,ORSTED.CO,Wind,Offshore Wind Full Cycle
+Vestas Wind Systems AS,VWDRY,VWS.CO,Wind,All Wind Full Cycle
+Brookfield Renewable Partners LP,BEP,BEP,General,Investment
+Iberdrola S.A,IBDRY,IBE.MC,General,General Renewables
+Array Technologies,ARRY,ARRY,Solar,Solar Trackers
+Shoals Technologies,SHLS,SHLS,Solar,EBOS
+TOYO Co,TOYO,TOYO,Solar,Module Manufacturer
+FTC Solar,FTCI,FTCI,Solar,Solar Trackers

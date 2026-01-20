@@ -18,7 +18,7 @@ from itertools import islice
 
 #JSON data
 
-with open("data/apidictdata.json") as filejson:
+with open("Finance_Stock_Database/data/apidictdata.json") as filejson:
             data = json.load(filejson)
 
 
@@ -29,7 +29,7 @@ hour = nowobj.strftime("%H")
 datefeatures = {'DATE':date, 'HOUR': hour}
 
 
-tickers = pl.read_csv("tickers.csv", truncate_ragged_lines=True).to_dicts()
+tickers = pl.read_csv("Finance_Stock_Database/tickers.csv", truncate_ragged_lines=True).to_dicts()
 
 class BrowserApp:
     def __init__(self, stock_browser_root, tickers):

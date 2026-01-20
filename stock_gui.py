@@ -17,7 +17,7 @@ from itertools import islice
 from specific import BrowserApp, LocatorApp, YFLocatorApp, YFBrowserApp
 import yfinance as yf
 
-tickers = pl.read_csv("tickers.csv", truncate_ragged_lines=True).to_dicts()
+tickers = pl.read_csv("Finance_Stock_Database/tickers.csv", truncate_ragged_lines=True).to_dicts()
 class SelectorApp:
      def __init__(self, root):
             self.root = root
@@ -68,7 +68,7 @@ datefeatures = {'DATE':date, 'HOUR': hour}
 if app.choice == 'SpecificStock':
         
     # Open the JSON dictionary file containing the API keys
-        with open("data/apidictdata.json") as filejson:
+        with open("Finance_Stock_Database/data/apidictdata.json") as filejson:
             data = json.load(filejson)
      # LAUNCH GUI
         root = tk.Tk()
@@ -94,7 +94,7 @@ if app.choice == 'SpecificStock':
             data['Tiingo']['CALLS-HOUR'] = {}
             data['Yfinance']['CALLS-DAY'] = {}
             data['Yfinance']['CALLS-HOUR'] = {}
-        with open("data/apidictdata.json", "w") as f:
+        with open("Finance_Stock_Database/data/apidictdata.json", "w") as f:
                     f.write(json.dumps(data, indent = 4))
         duckdb_path = f"{locapp.output_dir}/stocks.db"
         con = duckdb.connect(database=duckdb_path, read_only=False) 
@@ -116,7 +116,7 @@ if app.choice == 'SpecificStock':
                             data['Tiingo']['CALLS-HOUR'][hour] += 1
                     print("Adjusted limits dictionary")
                     apidictdata = json.dumps(data, indent = 4)
-                    with open("data/apidictdata.json", "w") as f:
+                    with open("Finance_Stock_Database/data/apidictdata.json", "w") as f:
                         f.write(apidictdata)
             except Exception as e:
                 print(e)
@@ -136,7 +136,7 @@ if app.choice == 'SpecificStock':
 elif app.choice == 'SpecificStockHourly':
         
     # Open the JSON dictionary file containing the API keys
-        with open("data/apidictdata.json") as filejson:
+        with open("Finance_Stock_Database/data/apidictdata.json") as filejson:
             data = json.load(filejson)
      # LAUNCH GUI
         root = tk.Tk()
@@ -158,7 +158,7 @@ elif app.choice == 'SpecificStockHourly':
             data['Tiingo']['CALLS-HOUR'] = {}
             data['Yfinance']['CALLS-DAY'] = {}
             data['Yfinance']['CALLS-HOUR'] = {}
-        with open("data/apidictdata.json", "w") as f:
+        with open("Finance_Stock_Database/data/apidictdata.json", "w") as f:
                     f.write(json.dumps(data, indent = 4))
         duckdb_path = f"{locapp.output_dir}/stocks.db"
         con = duckdb.connect(database=duckdb_path, read_only=False) 
@@ -179,7 +179,7 @@ elif app.choice == 'SpecificStockHourly':
                             data['Yfinance']['CALLS-HOUR'][hour] += 1
                     print("Adjusted limits dictionary")
                     apidictdata = json.dumps(data, indent = 4)
-                    with open("data/apidictdata.json", "w") as f:
+                    with open("Finance_Stock_Database/data/apidictdata.json", "w") as f:
                         f.write(apidictdata)
             except Exception as e:
                 print(e)
@@ -197,7 +197,7 @@ elif app.choice == 'SpecificStockHourly':
             print(e)        
 elif app.choice =='CASHHIST':
       print('Using AlphaVantage')
-      with open("data/apidictdata.json") as filejson:
+      with open("Finance_Stock_Database/data/apidictdata.json") as filejson:
             data = json.load(filejson)
       count = 0
       root = tk.Tk()
@@ -217,7 +217,7 @@ elif app.choice =='CASHHIST':
             data['Tiingo']['CALLS-HOUR'] = {}
             data['Yfinance']['CALLS-DAY'] = {}
             data['Yfinance']['CALLS-HOUR'] = {}
-      with open("data/apidictdata.json", "w") as f:
+      with open("Finance_Stock_Database/data/apidictdata.json", "w") as f:
                     f.write(json.dumps(data, indent = 4))
       duckdb_path = f"{locapp.output_dir}/stocks.db"
       con = duckdb.connect(database=duckdb_path, read_only=False) 
@@ -241,7 +241,7 @@ elif app.choice =='CASHHIST':
                 else:
                         data['AlphaVantage']['CALLS-HOUR'][hour] += 1
                 apidictdata = json.dumps(data, indent = 4)
-                with open("data/apidictdata.json", "w") as f:
+                with open("Finance_Stock_Database/data/apidictdata.json", "w") as f:
                     f.write(apidictdata)
         except Exception as e:
             print(e)
@@ -257,7 +257,7 @@ elif app.choice =='CASHHIST':
         print(e)
 elif app.choice =='BALANCEHIST':
       print('Using AlphaVantage')
-      with open("data/apidictdata.json") as filejson:
+      with open("Finance_Stock_Database/data/apidictdata.json") as filejson:
             data = json.load(filejson)
       count = 0
       root = tk.Tk()
@@ -277,7 +277,7 @@ elif app.choice =='BALANCEHIST':
             data['Tiingo']['CALLS-HOUR'] = {}
             data['Yfinance']['CALLS-DAY'] = {}
             data['Yfinance']['CALLS-HOUR'] = {}
-      with open("data/apidictdata.json", "w") as f:
+      with open("Finance_Stock_Database/data/apidictdata.json", "w") as f:
                 f.write(json.dumps(data, indent = 4))
       duckdb_path = f"{locapp.output_dir}/stocks.db"
       con = duckdb.connect(database=duckdb_path, read_only=False) 
@@ -301,7 +301,7 @@ elif app.choice =='BALANCEHIST':
                 else:
                         data['AlphaVantage']['CALLS-HOUR'][hour] += 1
                 apidictdata = json.dumps(data, indent = 4)
-                with open("data/apidictdata.json", "w") as f:
+                with open("Finance_Stock_Database/data/apidictdata.json", "w") as f:
                     f.write(apidictdata)
         except Exception as e:
             print(e)
@@ -317,7 +317,7 @@ elif app.choice =='BALANCEHIST':
         print(e)
 elif app.choice =='INCOMEHIST':
       print('Using AlphaVantage')
-      with open("data/apidictdata.json") as filejson:
+      with open("Finance_Stock_Database/data/apidictdata.json") as filejson:
             data = json.load(filejson)
       count = 0
       root = tk.Tk()
@@ -337,7 +337,7 @@ elif app.choice =='INCOMEHIST':
             data['Tiingo']['CALLS-HOUR'] = {}
             data['Yfinance']['CALLS-DAY'] = {}
             data['Yfinance']['CALLS-HOUR'] = {}
-      with open("data/apidictdata.json", "w") as f:
+      with open("Finance_Stock_Database/data/apidictdata.json", "w") as f:
                     f.write(json.dumps(data, indent = 4))
       duckdb_path = f"{locapp.output_dir}/stocks.db"
       con = duckdb.connect(database=duckdb_path, read_only=False) 
@@ -361,7 +361,7 @@ elif app.choice =='INCOMEHIST':
                 else:
                         data['AlphaVantage']['CALLS-HOUR'][hour] += 1
                 apidictdata = json.dumps(data, indent = 4)
-                with open("data/apidictdata.json", "w") as f:
+                with open("Finance_Stock_Database/data/apidictdata.json", "w") as f:
                     f.write(apidictdata)
         except Exception as e:
             print(e)
@@ -376,7 +376,7 @@ elif app.choice =='INCOMEHIST':
       except Exception as e:
         print(e)
 else:
-        with open("data/apidictdata.json") as filejson:
+        with open("Finance_Stock_Database/data/apidictdata.json") as filejson:
             data = json.load(filejson)
         count = 0
         for t in tickers:
@@ -406,7 +406,7 @@ else:
                 data['Tiingo']['CALLS-HOUR'] = {}
                 data['Yfinance']['CALLS-DAY'] = {}
                 data['Yfinance']['CALLS-HOUR'] = {}
-            with open("data/apidictdata.json", "w") as f:
+            with open("Finance_Stock_Database/data/apidictdata.json", "w") as f:
                         f.write(json.dumps(data, indent = 4))
             duckdb_path = f"data/mini_temp.db"
             con = duckdb.connect(database=duckdb_path, read_only=False) 

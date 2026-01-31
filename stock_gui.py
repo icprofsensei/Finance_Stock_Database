@@ -184,9 +184,9 @@ elif app.choice == 'SpecificStockHourly':
             except Exception as e:
                 print(e)
             lazyframe = lazyframe.with_columns([pl.col("Close").cast(pl.Float64), pl.col("High").cast(pl.Float64), pl.col("Low").cast(pl.Float64), pl.col("Volume").cast(pl.Int64)])
-            con.execute(f"DROP TABLE IF EXISTS TICKER_2YPREV_{locapp.feature}")
+            con.execute(f"DROP TABLE IF EXISTS Y2PREV_{locapp.feature}")
             con.execute(f""" CREATE TABLE IF NOT EXISTS
-                        TICKER_2YPREV_{locapp.feature}
+                        Y2PREV_{locapp.feature}
                         AS 
                         SELECT *
                         FROM lazyframe;""")

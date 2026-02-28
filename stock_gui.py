@@ -132,7 +132,6 @@ if app.choice == 'SpecificStock':
 
         except Exception as e:
             print(e)
-
 elif app.choice == 'SpecificStockHourly':
         
     # Open the JSON dictionary file containing the API keys
@@ -306,7 +305,7 @@ elif app.choice =='BALANCEHIST':
         except Exception as e:
             print(e)
 
-        con.execute(f"DROP TABLE IF EXISTS CASHFLOW_{locapp.feature}")
+        con.execute(f"DROP TABLE IF EXISTS BALANCESHEET_{locapp.feature}")
         con.execute(f""" CREATE TABLE IF NOT EXISTS
                     BALANCESHEET_{locapp.feature}
                     AS 
@@ -366,7 +365,7 @@ elif app.choice =='INCOMEHIST':
         except Exception as e:
             print(e)
 
-        con.execute(f"DROP TABLE IF EXISTS CASHFLOW_{locapp.feature}")
+        con.execute(f"DROP TABLE IF EXISTS INCOMESTATEMENT_{locapp.feature}")
         con.execute(f""" CREATE TABLE IF NOT EXISTS
                     INCOMESTATEMENT_{locapp.feature}
                     AS 

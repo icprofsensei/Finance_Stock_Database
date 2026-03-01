@@ -45,6 +45,8 @@ class SelectorApp:
             BALANCEHistRep.pack(pady=4)
             INCOMEHistRep = tk.Radiobutton(self.root, text = "Specific Stock INCOME", variable = self.path, value = 'INCOMEHIST')
             INCOMEHistRep.pack(pady=4)
+            News = tk.Radiobutton(self.root, text = "Specific Stock NEWS", variable = self.path, value = 'NEWS')
+            News.pack(pady=4)
             Overview = tk.Radiobutton(self.root, text = "Overview", variable = self.path, value = "Overview")
             Overview.pack(pady=4)
 
@@ -371,6 +373,63 @@ elif app.choice =='INCOMEHIST':
                     AS 
                     SELECT *
                     FROM cashflowdata;""")
+        con.close()
+      except Exception as e:
+        print(e)
+elif app.choice =='NEWS':
+      print('Using AlphaVantage')
+      with open("Finance_Stock_Database/data/apidictdata.json") as filejson:
+            data = json.load(filejson)
+      count = 0
+      root = tk.Tk()
+      locapp = LocatorApp(root, data, datefeatures, 'nodates')
+      root.mainloop()
+      if (len(data['AlphaVantage']['CALLS-DAY'].keys()) >= 1 and date not in data['AlphaVantage']['CALLS-DAY'].keys()) or (len(data['Tiingo']['CALLS-DAY'].keys()) >= 1 and date not in data['Tiingo']['CALLS-DAY'].keys()) or (len(data['Yfinance']['CALLS-DAY'].keys()) >= 1 and date not in data['Yfinance']['CALLS-DAY'].keys()):
+            data['AlphaVantage']['CALLS-DAY'] = {}
+            data['AlphaVantage']['CALLS-HOUR'] = {}
+            data['Tiingo']['CALLS-DAY'] = {}
+            data['Tiingo']['CALLS-HOUR'] = {}
+            data['Yfinance']['CALLS-DAY'] = {}
+            data['Yfinance']['CALLS-HOUR'] = {}
+      if (len(data['AlphaVantage']['CALLS-DAY'].keys()) == 0) and (len(data['Tiingo']['CALLS-DAY'].keys()) == 0) and (len(data['Yfinance']['CALLS-DAY'].keys()) == 0):
+            data['AlphaVantage']['CALLS-DAY'] = {}
+            data['AlphaVantage']['CALLS-HOUR'] = {}
+            data['Tiingo']['CALLS-DAY'] = {}
+            data['Tiingo']['CALLS-HOUR'] = {}
+            data['Yfinance']['CALLS-DAY'] = {}
+            data['Yfinance']['CALLS-HOUR'] = {}
+      with open("Finance_Stock_Database/data/apidictdata.json", "w") as f:
+                    f.write(json.dumps(data, indent = 4))
+      duckdb_path = f"{locapp.output_dir}/stocks.db"
+      con = duckdb.connect(database=duckdb_path, read_only=False) 
+      try:
+        apikey = data['AlphaVantage']['API-KEY']
+        url = f"{data['AlphaVantage']['NEWS']}{locapp.feature}&apikey={apikey}"
+        alpharesponse = requests.get(url)
+        alphadata = alpharesponse.json()['feed']
+        try:
+            newsdata = pl.from_dicts(alphadata)
+            if len(newsdata.columns) > 1:
+                if date not in data['AlphaVantage']['CALLS-DAY'].keys():
+                        data['AlphaVantage']['CALLS-DAY'][date] = 1
+                else:
+                        data['AlphaVantage']['CALLS-DAY'][date] += 1
+                if hour not in data['AlphaVantage']['CALLS-HOUR'].keys():
+                        data['AlphaVantage']['CALLS-HOUR'][hour] = 1
+                else:
+                        data['AlphaVantage']['CALLS-HOUR'][hour] += 1
+                apidictdata = json.dumps(data, indent = 4)
+                with open("Finance_Stock_Database/data/apidictdata.json", "w") as f:
+                    f.write(apidictdata)
+        except Exception as e:
+            print(e)
+
+        con.execute(f"DROP TABLE IF EXISTS NEWS_{locapp.feature}")
+        con.execute(f""" CREATE TABLE IF NOT EXISTS
+                    NEWS_{locapp.feature}
+                    AS 
+                    SELECT *
+                    FROM newsdata;""")
         con.close()
       except Exception as e:
         print(e)

@@ -18,7 +18,7 @@ class QueryEngine():
     
     def run_query(self):
         self.query = self.query_entry_text.get(1.0, tk.END)
-        con = ddb.connect("data/stocks.db")
+        con = ddb.connect("Finance_stock_database/data/stocks.db")
         self.result = con.execute(self.query).pl()
         con.close()
         self.cols = self.result.columns

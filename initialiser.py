@@ -70,6 +70,7 @@ apidict = {
         'URLCASHFLOW': "https://www.alphavantage.co/query?function=CASH_FLOW&symbol=",
         'URLBALANCESHEET': "https://www.alphavantage.co/query?function=BALANCE_SHEET&symbol=",
         'URLINCOMESTATEMENT': "https://www.alphavantage.co/query?function=INCOME_STATEMENT&symbol=",
+        'URLEARNINGS': "https://www.alphavantage.co/query?function=EARNINGS&symbol=",
         "NEWS": "https://www.alphavantage.co/query?function=NEWS_SENTIMENT&sort=LATEST&limit=1000&tickers=", 
         "CALLS-DAY": {},
         "CALLS-HOUR":{}

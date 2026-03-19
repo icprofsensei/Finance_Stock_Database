@@ -70,7 +70,9 @@ Pre-requisites: Python or Conda is installed on your machine. The following tuto
 
     e) Select 'Specific Stock INCOME': Create an in-memory duck db database for the specific stock's income statement (as a table) for a desired date range.
 
-    f) Select 'Specific Stock NEWS': Create an in-memory duck db database for the specific stock's news (up to 1000) articles.
+    f) Select 'Specific Stock EARNINGS': Create an in-memory duck db database for the specific stock's financial report releases (as a table) for a desired date range. 
+
+    g) Select 'Specific Stock NEWS': Create an in-memory duck db database for the specific stock's news (up to 1000) articles.
 
     API rate management is handled by updating the JSON file with your current usage to ensure that you do not exceed rate limits.
 

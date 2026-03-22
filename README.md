@@ -8,6 +8,8 @@
 
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:|:----------------------
 
+UPDATE: SMA Solar fundamental information is currently unavailable - only market prices are currently available. 
+
 ### This is an all-in-one python GUI and pipeline to enable green stock analysis, whilst managing free API rate limits automatically.
 
 Pre-requisites: Python or Conda is installed on your machine. The following tutorial is for windows devices but can be adapted for MacOS. 

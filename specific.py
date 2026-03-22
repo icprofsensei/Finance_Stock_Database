@@ -45,7 +45,7 @@ class BrowserApp:
     def submit(self):
                 rowdata = self.tickers[self.curr_row]
                 try:
-                    self.finalticker = rowdata['Ticker']
+                    self.finalticker = rowdata
                     self.stock_browser_root.destroy()
                     
                 except Exception as e:

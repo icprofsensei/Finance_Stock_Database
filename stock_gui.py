@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 from itertools import islice
 from specific import BrowserApp, LocatorApp, YFLocatorApp, YFBrowserApp
 import yfinance as yf
+import ast
 
 tickers = pl.read_csv("Finance_Stock_Database/tickers.csv", truncate_ragged_lines=True).to_dicts()
 class SelectorApp:
@@ -83,7 +84,7 @@ if app.choice == 'SpecificStock':
         headersdict = {
             'Content-Type': 'application/json'
         }
-        url = f"{data['Tiingo']['URL']}/{locapp.feature}/prices?startDate={locapp.startdate}&endDate={locapp.enddate}&resampleFreq=daily&token={apikey}"
+        url = f"{data['Tiingo']['URL']}/{ast.literal_eval(locapp.feature)['Ticker']}/prices?startDate={locapp.startdate}&endDate={locapp.enddate}&resampleFreq=daily&token={apikey}"
         if (len(data['AlphaVantage']['CALLS-DAY'].keys()) >= 1 and date not in data['AlphaVantage']['CALLS-DAY'].keys()) or (len(data['Tiingo']['CALLS-DAY'].keys()) >= 1 and date not in data['Tiingo']['CALLS-DAY'].keys()):
             data['AlphaVantage']['CALLS-DAY'] = {}
             data['AlphaVantage']['CALLS-HOUR'] = {}
@@ -125,9 +126,9 @@ if app.choice == 'SpecificStock':
             except Exception as e:
                 print(e)
             lazyframe = lazyframe.with_columns([pl.col("date").str.slice(0,10), pl.col("close").cast(pl.Float64), pl.col("high").cast(pl.Float64), pl.col("low").cast(pl.Float64), pl.col("volume").cast(pl.Int64)])
-            con.execute(f"DROP TABLE IF EXISTS TICKER_{locapp.feature}")
+            con.execute(f"DROP TABLE IF EXISTS TICKER_{ast.literal_eval(locapp.feature)['Ticker']}")
             con.execute(f""" CREATE TABLE IF NOT EXISTS
-                        TICKER_{locapp.feature}
+                        TICKER_{ast.literal_eval(locapp.feature)['Ticker']}
                         AS 
                         SELECT *
                         FROM lazyframe;""")
@@ -226,8 +227,19 @@ elif app.choice =='CASHHIST':
       con = duckdb.connect(database=duckdb_path, read_only=False) 
       try:
         apikey = data['AlphaVantage']['API-KEY']
-        url = f"{data['AlphaVantage']['URLCASHFLOW']}{locapp.feature}&apikey={apikey}"
+        print(locapp.feature)
+        url = f"{data['AlphaVantage']['URLCASHFLOW']}{ast.literal_eval(locapp.feature)['Ticker']}&apikey={apikey}"
         alpharesponse = requests.get(url)
+        if 'quarterlyReports' not in alpharesponse.json().keys():
+                print("Trying backup URL")
+                url = f"{data['AlphaVantage']['URLCASHFLOW']}{ast.literal_eval(locapp.feature)['Backup_Ticker']}&apikey={apikey}"
+                print(url)
+                alpharesponse = requests.get(url)
+                if 'quarterlyReports' not in alpharesponse.json().keys():
+                      print("Ticker not supported yet")
+                      alphadata = None
+                else:
+                      alphadata = alpharesponse.json()['quarterlyReports']
         alphadata = alpharesponse.json()['quarterlyReports']
         try:
             cashflowdata = pl.from_dicts(alphadata)
@@ -249,9 +261,9 @@ elif app.choice =='CASHHIST':
         except Exception as e:
             print(e)
         
-        con.execute(f"DROP TABLE IF EXISTS CASHFLOW_{locapp.feature}")
+        con.execute(f"DROP TABLE IF EXISTS CASHFLOW_{ast.literal_eval(locapp.feature)['Ticker']}")
         con.execute(f""" CREATE TABLE IF NOT EXISTS
-                    CASHFLOW_{locapp.feature}
+                    CASHFLOW_{ast.literal_eval(locapp.feature)['Ticker']}
                     AS 
                     SELECT *
                     FROM cashflowdata;""")
@@ -286,8 +298,13 @@ elif app.choice =='BALANCEHIST':
       con = duckdb.connect(database=duckdb_path, read_only=False) 
       try:
         apikey = data['AlphaVantage']['API-KEY']
-        url = f"{data['AlphaVantage']['URLBALANCESHEET']}{locapp.feature}&apikey={apikey}"
+        url = f"{data['AlphaVantage']['URLBALANCESHEET']}{ast.literal_eval(locapp.feature)['Ticker']}&apikey={apikey}"
         alpharesponse = requests.get(url)
+        if alpharesponse.status_code != 200:
+                print("Trying backup URL")
+                url = f"{data['AlphaVantage']['URLBALANCESHEET']}{ast.literal_eval(locapp.feature)['Backup_Ticker']}&apikey={apikey}"
+                print(url)
+                alpharesponse = requests.get(url)
         alphadata = alpharesponse.json()['quarterlyReports']
         try:
             cashflowdata = pl.from_dicts(alphadata)
@@ -309,9 +326,9 @@ elif app.choice =='BALANCEHIST':
         except Exception as e:
             print(e)
 
-        con.execute(f"DROP TABLE IF EXISTS BALANCESHEET_{locapp.feature}")
+        con.execute(f"DROP TABLE IF EXISTS BALANCESHEET_{ast.literal_eval(locapp.feature)['Ticker']}")
         con.execute(f""" CREATE TABLE IF NOT EXISTS
-                    BALANCESHEET_{locapp.feature}
+                    BALANCESHEET_{ast.literal_eval(locapp.feature)['Ticker']}
                     AS 
                     SELECT *
                     FROM cashflowdata;""")
@@ -346,8 +363,13 @@ elif app.choice =='INCOMEHIST':
       con = duckdb.connect(database=duckdb_path, read_only=False) 
       try:
         apikey = data['AlphaVantage']['API-KEY']
-        url = f"{data['AlphaVantage']['URLINCOMESTATEMENT']}{locapp.feature}&apikey={apikey}"
+        url = f"{data['AlphaVantage']['URLINCOMESTATEMENT']}{ast.literal_eval(locapp.feature)['Ticker']}&apikey={apikey}"
         alpharesponse = requests.get(url)
+        if alpharesponse.status_code != 200:
+                print("Trying backup URL")
+                url = f"{data['AlphaVantage']['URLINCOMESTATEMENT']}{ast.literal_eval(locapp.feature['Backup_Ticker'])}&apikey={apikey}"
+                print(url)
+                alpharesponse = requests.get(url)
         alphadata = alpharesponse.json()['quarterlyReports']
         try:
             cashflowdata = pl.from_dicts(alphadata)
@@ -369,9 +391,9 @@ elif app.choice =='INCOMEHIST':
         except Exception as e:
             print(e)
 
-        con.execute(f"DROP TABLE IF EXISTS INCOMESTATEMENT_{locapp.feature}")
+        con.execute(f"DROP TABLE IF EXISTS INCOMESTATEMENT_{ast.literal_eval(locapp.feature)['Ticker']}")
         con.execute(f""" CREATE TABLE IF NOT EXISTS
-                    INCOMESTATEMENT_{locapp.feature}
+                    INCOMESTATEMENT_{ast.literal_eval(locapp.feature)['Ticker']}
                     AS 
                     SELECT *
                     FROM cashflowdata;""")
@@ -406,9 +428,14 @@ elif app.choice =='EARNINGSHIST':
       con = duckdb.connect(database=duckdb_path, read_only=False) 
       try:
         apikey = data['AlphaVantage']['API-KEY']
-        url = f"{data['AlphaVantage']['URLEARNINGS']}{locapp.feature}&apikey={apikey}"
+        url = f"{data['AlphaVantage']['URLEARNINGS']}{ast.literal_eval(locapp.feature)['Ticker']}&apikey={apikey}"
         print(url)
         alpharesponse = requests.get(url)
+        if alpharesponse.status_code != 200:
+                print("Trying backup URL")
+                url = f"{data['AlphaVantage']['URLEARNINGS']}{ast.literal_eval(locapp.feature)['Backup_Ticker']}&apikey={apikey}"
+                print(url)
+                alpharesponse = requests.get(url)
         alphadata = alpharesponse.json()['quarterlyEarnings']
         try:
             earningsdata = pl.from_dicts(alphadata)
@@ -432,9 +459,9 @@ elif app.choice =='EARNINGSHIST':
         except Exception as e:
             print(e)
 
-        con.execute(f"DROP TABLE IF EXISTS EARNINGS_{locapp.feature}")
+        con.execute(f"DROP TABLE IF EXISTS EARNINGS_{ast.literal_eval(locapp.feature)['Ticker']}")
         con.execute(f""" CREATE TABLE IF NOT EXISTS
-                    EARNINGS_{locapp.feature}
+                    EARNINGS_{ast.literal_eval(locapp.feature)['Ticker']}
                     AS 
                     SELECT *
                     FROM earningsdata;
@@ -470,8 +497,13 @@ elif app.choice =='NEWS':
       con = duckdb.connect(database=duckdb_path, read_only=False) 
       try:
         apikey = data['AlphaVantage']['API-KEY']
-        url = f"{data['AlphaVantage']['NEWS']}{locapp.feature}&apikey={apikey}"
+        url = f"{data['AlphaVantage']['NEWS']}{ast.literal_eval(locapp.feature['Ticker'])}&apikey={apikey}"
         alpharesponse = requests.get(url)
+        if alpharesponse.status_code != 200:
+                print("Trying backup URL")
+                url = f"{data['AlphaVantage']['NEWS']}{ast.literal_eval(locapp.feature['Backup_Ticker'])}&apikey={apikey}"
+                print(url)
+                alpharesponse = requests.get(url)
         alphadata = alpharesponse.json()['feed']
         try:
             newsdata = pl.from_dicts(alphadata)
@@ -490,9 +522,9 @@ elif app.choice =='NEWS':
         except Exception as e:
             print(e)
 
-        con.execute(f"DROP TABLE IF EXISTS NEWS_{locapp.feature}")
+        con.execute(f"DROP TABLE IF EXISTS NEWS_{ast.literal_eval(locapp.feature)['Ticker']}")
         con.execute(f""" CREATE TABLE IF NOT EXISTS
-                    NEWS_{locapp.feature}
+                    NEWS_{ast.literal_eval(locapp.feature)['Ticker']}
                     AS 
                     SELECT *
                     FROM newsdata;""")

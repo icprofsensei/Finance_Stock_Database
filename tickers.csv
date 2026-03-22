@@ -1,34 +1,34 @@
-Stock,Ticker,yfticker,Renewable Main,Renewable SubCategory
-Sunrun,RUN,RUN,Solar,Battery Storage
-First Solar,FSLR,FSLR,Solar,Module Manufacturer
-Enphase Energy Inc,ENPH,ENPH,Solar,Battery Storage
-SPDR S&P Kensho Clean Power ETF,CNRG,^KENERGYP,General,ETF
-Engie SA,ENGIY,ENGQF,General,General Renewables
-Jinko Solar,688223,JKS,Solar,Module Manufacturer
-Canadian Solar Inc,CSIQ,CSIQ,Solar,Module Manufacturer
-QC Solar,301278,301278.SZ,Solar,Infrastructure Manufacturer
-P2 Solar Inc,PTOS,PTOS,Solar,Research And Development
-NextEra Energy Inc,NEEPRS,NEE,General,General Renewables
-Daqo New Energy Corp,DQ,DQ,Solar,Polysilicon Manufacturer
-Orsted A/S,DNNGY,ORSTED.CO,Wind,Offshore Wind Full Cycle
-Vestas Wind Systems AS,VWDRY,VWS.CO,Wind,All Wind Full Cycle
-Brookfield Renewable Partners LP,BEP,BEP,General,Investment
-Iberdrola S.A,IBDRY,IBE.MC,General,General Renewables
-Array Technologies,ARRY,ARRY,Solar,Solar Trackers
-Shoals Technologies,SHLS,SHLS,Solar,EBOS
-TOYO Co,TOYO,TOYO,Solar,Module Manufacturer
-FTC Solar,FTCI,FTCI,Solar,Solar Trackers
-AES Corp,AES,AES,General,General Renewables
-Enlight Energy,ENLT,ENLT,General,General Renewables
-Solaredge,SEDG,2ED.MU,Solar,Storage and EBOS
-Amaresco,AMRC,4AM.SG,General,Infrastructure Provider
-Tigo Energy,TYGO,TYGO,Solar,Module Level Power Electronics
-Neovolta,NEOV,NEOV,Solar,Battery Storage
-Spruce,SPRU,SPRU,Solar,Solar asset operator
-Powerbank,SUUN,SUUN,Solar,Solar plant operator
-Maxeon,MAXN,MAXN,Solar,Panel Manufacturer
-Solarwindow,WNDW,WNDW,Solar,Solar Glass
-SPI Group,SPI,SPIEF,General,Multi-company ownership Group
-Turbo Energy,TURB,TURB,Solar,Solar Storage technology
-Aurora Solar,AACTF,AACTF,Solar,Software Platform
-SMA Solar Technology,SMTGY,SMTGY,Solar,Solar Inverters
+Stock,Ticker,yfticker,Renewable Main,Renewable SubCategory,Backup_Ticker
+Sunrun,RUN,RUN,Solar,Battery Storage,RUN
+First Solar,FSLR,FSLR,Solar,Module Manufacturer,FSLR
+Enphase Energy Inc,ENPH,ENPH,Solar,Battery Storage,ENPH
+SPDR S&P Kensho Clean Power ETF,CNRG,^KENERGYP,General,ETF,CNRG
+Engie SA,ENGIY,ENGQF,General,General Renewables,ENGIY
+Jinko Solar,688223,JKS,Solar,Module Manufacturer,688223
+Canadian Solar Inc,CSIQ,CSIQ,Solar,Module Manufacturer,CSIQ
+QC Solar,301278,301278.SZ,Solar,Infrastructure Manufacturer,301278
+P2 Solar Inc,PTOS,PTOS,Solar,Research And Development,PTOS
+NextEra Energy Inc,NEEPRS,NEE,General,General Renewables,NEEPRS
+Daqo New Energy Corp,DQ,DQ,Solar,Polysilicon Manufacturer,DQ
+Orsted A/S,DNNGY,ORSTED.CO,Wind,Offshore Wind Full Cycle,DNNGY
+Vestas Wind Systems AS,VWDRY,VWS.CO,Wind,All Wind Full Cycle,VWDRY
+Brookfield Renewable Partners LP,BEP,BEP,General,Investment,BEP
+Iberdrola S.A,IBDRY,IBE.MC,General,General Renewables,IBDRY
+Array Technologies,ARRY,ARRY,Solar,Solar Trackers,ARRY
+Shoals Technologies,SHLS,SHLS,Solar,EBOS,SHLS
+TOYO Co,TOYO,TOYO,Solar,Module Manufacturer,TOYO
+FTC Solar,FTCI,FTCI,Solar,Solar Trackers,FTCI
+AES Corp,AES,AES,General,General Renewables,AES
+Enlight Energy,ENLT,ENLT,General,General Renewables,ENLT
+Solaredge,SEDG,2ED.MU,Solar,Storage and EBOS,SEDG
+Amaresco,AMRC,4AM.SG,General,Infrastructure Provider,AMRC
+Tigo Energy,TYGO,TYGO,Solar,Module Level Power Electronics,TYGO
+Neovolta,NEOV,NEOV,Solar,Battery Storage,NEOV
+Spruce,SPRU,SPRU,Solar,Solar asset operator,SPRU
+Powerbank,SUUN,SUUN,Solar,Solar plant operator,SUUN
+Maxeon,MAXN,MAXN,Solar,Panel Manufacturer,MAXN
+Solarwindow,WNDW,WNDW,Solar,Solar Glass,WNDW
+SPI Group,SPI,SPIEF,General,Multi-company ownership Group,SPI
+Turbo Energy,TURB,TURB,Solar,Solar Storage technology,TURB
+Aurora Solar,AACTF,AACTF,Solar,Software Platform,AACTF
+SMA Solar Technology,SMTGY,SMTGY,Solar,Solar Inverters,S92.DE

@@ -440,8 +440,8 @@ elif app.choice =='EARNINGSHIST':
         try:
             earningsdata = pl.from_dicts(alphadata)
             earningsdata = earningsdata.with_columns(
-                pl.col("fiscalDateEnding").str.strptime(pl.Date, format="%Y-%m-%d").alias("PERIOD_DATE"),
-                pl.col("reportedDate").str.strptime(pl.Date, format="%Y-%m-%d").alias("REPORTED_DATE")
+                pl.col("fiscalDateEnding").alias("PERIOD_DATE"),
+                pl.col("reportedDate").alias("REPORTED_DATE")
             ).sort("REPORTED_DATE").drop("fiscalDateEnding", "reportedDate")
             if len(earningsdata.columns) > 1:
                 print("Data loaded")

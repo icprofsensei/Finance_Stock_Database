@@ -233,13 +233,12 @@ class LocatorApp:
                 alphastatuslab = tk.Label(self.root, text= f"""AlphaVantage Usage:
                                         Calls this day: {data['AlphaVantage']['CALLS-DAY'][datefeatures['DATE']]} /25
                                         """)
-                alphastatuslab.grid(row=9, column=1, sticky="w",pady=4)
+                alphastatuslab.grid(row=10, column=1, sticky="w",pady=4)
             else:
                 alphastatuslab = tk.Label(self.root, text= f"""AlphaVantage Usage:
-                                    Calls this hour: {data['AlphaVantage']['CALLS-HOUR'][datefeatures['HOUR']]},
                                         Calls this day: {data['AlphaVantage']['CALLS-DAY'][datefeatures['DATE']]} /25
                                         """)
-                alphastatuslab.grid(row=9, column=1, sticky="w",pady=4)
+                alphastatuslab.grid(row=10, column=1, sticky="w",pady=4)
         
 
         submit_button = tk.Button(self.root, text = "Submit", command = self.submit)

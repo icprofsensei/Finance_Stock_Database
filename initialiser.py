@@ -9,6 +9,7 @@ from tkcalendar import Calendar
 from tqdm import tqdm
 import datetime
 import duckdb
+import os
 
 # TKINTER GUI
 
@@ -81,5 +82,16 @@ apidict = {
     }
 }
 apidictdata = json.dumps(apidict, indent = 4)
-with open("data/apidictdata.json", "a+") as f:
-    f.write(apidictdata)
+try:
+    os.mkdir('data')
+except OSError as e:
+    print("Error:", e)
+    print("Continuing despite file path existing...")
+filepathdatadict = 'data/apidictdata.json'
+if os.path.isfile(filepathdatadict):
+    print("API JSON handler found at location. Proceed to stock_gui")
+    pass
+else:
+    with open(filepathdatadict, "a+") as f:
+        f.write(apidictdata)
+    print("Created New API JSON handler. Proceed to stock_gui")

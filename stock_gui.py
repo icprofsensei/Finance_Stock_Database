@@ -17,6 +17,8 @@ from itertools import islice
 from specific import BrowserApp, LocatorApp, YFLocatorApp, YFBrowserApp
 import yfinance as yf
 import ast
+import warnings
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 tickers = pl.read_csv("Finance_Stock_Database/tickers.csv", truncate_ragged_lines=True).to_dicts()
 class SelectorApp:
